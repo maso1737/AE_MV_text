@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第3回 Vコンテ構築（構図・カメラ・レイアウト） — Deep Prism MV Workshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,700;0,900;1,700;1,900&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700;800&family=Noto+Serif+JP:wght@400;600;800&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="deck.css">
+<style>
+  .cover-grid{position:absolute;inset:0;display:grid;grid-template-columns:1.15fr 0.85fr;z-index:2;}
+  .cover-l{padding:118px 0 118px 132px;display:flex;flex-direction:column;justify-content:center;}
+  .cover-r{position:relative;overflow:hidden;background:#0b0518;}
+  .cover-r img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 46%;}
+  .cover-r .vscrim{position:absolute;inset:0;background:linear-gradient(90deg,#07030f 0%,rgba(7,3,15,0.3) 30%,transparent 62%);}
+  .cover-sess{font-family:var(--orn);font-style:italic;font-weight:700;font-size:300px;line-height:0.8;letter-spacing:-0.04em;
+    color:transparent;background:var(--grad-spot);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 40px rgba(255,79,168,0.3));}
+  /* section track */
+  .track{display:flex;width:100%;height:96px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,210,122,0.25);}
+  .track .seg{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border-right:1px solid rgba(7,3,15,0.5);position:relative;}
+  .track .seg:last-child{border-right:none;}
+  .track .seg .sl{font-family:var(--jp);font-weight:700;font-size:20px;color:#fff;letter-spacing:0.05em;}
+  .track .seg .se{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;color:rgba(255,255,255,0.75);}
+  /* rule of thirds */
+  .rot{position:relative;border:1px solid rgba(255,210,122,0.3);border-radius:6px;aspect-ratio:16/9;overflow:hidden;background:linear-gradient(135deg,rgba(184,80,255,0.12),rgba(90,233,255,0.06));}
+  .rot::before,.rot::after{content:'';position:absolute;background:rgba(255,210,122,0.28);}
+  .rot::before{left:33.33%;right:33.33%;top:0;bottom:0;border-left:1px dashed rgba(255,210,122,0.4);border-right:1px dashed rgba(255,210,122,0.4);background:none;}
+  .rot::after{top:33.33%;bottom:33.33%;left:0;right:0;border-top:1px dashed rgba(255,210,122,0.4);border-bottom:1px dashed rgba(255,210,122,0.4);background:none;}
+  .rot .pt{position:absolute;width:26px;height:26px;border-radius:50%;background:var(--grad-btn);box-shadow:0 0 18px rgba(255,79,168,0.7);transform:translate(-50%,-50%);}
+  .rot .pt.main{left:33.33%;top:66.66%;width:34px;height:34px;}
+  .rot .pt.sub{left:66.66%;top:33.33%;background:rgba(90,233,255,0.85);box-shadow:0 0 14px rgba(90,233,255,0.6);}
+  .rot .lbl{position:absolute;font-family:var(--mono);font-size:13px;letter-spacing:0.12em;color:#fff;text-shadow:0 1px 4px #000;}
+  /* null diagram */
+  .nulld{display:flex;align-items:center;gap:0;}
+  .nbox{border:1px solid rgba(255,210,122,0.4);border-radius:5px;padding:16px 22px;font-family:var(--mono);letter-spacing:0.12em;text-align:center;background:rgba(10,5,20,0.5);}
+  .nbox .nt{font-size:13px;color:var(--gold);letter-spacing:0.2em;}
+  .nbox .nv{font-family:var(--jp);font-weight:700;font-size:20px;color:#fff;margin-top:4px;}
+  .nbox.null{border-color:rgba(90,233,255,0.5);box-shadow:0 0 18px rgba(90,233,255,0.2);}
+  .nbox.null .nt{color:var(--ice);}
+  .narrow{flex:1;height:1px;background:linear-gradient(90deg,var(--gold),var(--rouge));position:relative;margin:0 10px;}
+  .narrow::after{content:'◂ 親子付け';position:absolute;top:-30px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:12px;letter-spacing:0.18em;color:var(--lavender);white-space:nowrap;}
+</style>
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+
+  <!-- 01 · COVER -->
+  <section class="slide" data-label="Cover">
+    <div class="cover-grid">
+      <div class="cover-l">
+        <div class="eyebrow anim" style="margin-bottom:30px;">幽ヶ崎 海月 · DEEP PRISM<span class="bar"></span>AE LYRIC MV WORKSHOP</div>
+        <div class="cover-sess anim d1">03</div>
+        <h1 class="s-title grad anim d2" style="font-size:88px;margin-top:6px;">STORYBOARD<br>IN MOTION</h1>
+        <div class="s-jp serif anim d3" style="font-size:36px;margin-top:18px;letter-spacing:0.12em;">Vコンテ構築 — 構図・カメラ・レイアウト</div>
+        <div class="lead anim d4" style="font-size:21px;margin-top:26px;max-width:680px;">楽曲全体を<span class="neon">“映像の流れ”</span>として可視化する。<br>MVの“骨格”をここで完成させる。</div>
+        <div class="chips anim d5" style="margin-top:34px;">
+          <span class="chip on">AFTER EFFECTS</span>
+          <span class="chip gold">PRE-COMP</span>
+          <span class="chip gold">CAMERA · 3D</span>
+        </div>
+      </div>
+      <div class="cover-r">
+        <img src="assets/poster_water.jpg" alt="Deep Prism — Memory of Water">
+        <div class="vscrim"></div>
+        <div class="corner tr"></div><div class="corner br"></div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>KINETIC STAGE</b><span class="dot"></span>VTUBER MUSIC VIDEO · AFTER EFFECTS</div>
+      <div class="cr">SESSION 03 / 06</div>
+    </footer>
+  </section>
+
+  <!-- 02 · GOALS -->
+  <section class="slide" data-label="Goals">
+    <div class="ghost-num">3</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">01</span><span class="bar"></span>TODAY'S GOALS</div>
+        <div class="row"><div><h2 class="s-title">今日のゴール</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">MVの“骨格”を完成させる</div></div></div>
+      </div>
+      <div class="cols c2-wide-l" style="align-items:center;">
+        <ul class="blist anim d2">
+          <li>楽曲を<b>セクションごと</b>に映像化できる</li>
+          <li>AEで<b>プリコン構造</b>を組める</li>
+          <li>カメラワーク（<b>寄り・引き・パン</b>）を使い分けられる</li>
+          <li><b class="hot">視線誘導と画面密度</b>を設計できる</li>
+        </ul>
+        <div class="plate anim d3 contain" style="height:540px;">
+          <img src="assets/lineart.jpg" alt="レイアウト作例">
+          <span class="pc tl"></span><span class="pc tr"></span><span class="pc bl"></span><span class="pc br"></span>
+          <div class="tag">LAYOUT — ROUGH</div>
+          <div class="cap">仮素材で画面構成を決める — まずは“流れ”をつくる</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 03 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 03 · WHAT IS V-CONTE -->
+  <section class="slide" data-label="What is V-conte">
+    <div class="ghost-num">3</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">02</span><span class="bar"></span>WHAT IS A V-CONTE</div>
+        <div class="row"><div><h2 class="s-title">Vコンテとは何か</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">“動く絵コンテ” — 完成映像の設計図</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="stack anim d2">
+          <div class="lead">静止画の絵コンテと違い、<span class="neon">時間・音・動き・カメラ</span>を含む。<br>MV制作では必須の工程。</div>
+          <div class="quote">
+            <div class="qe">“If the skeleton is weak…”</div>
+            <div class="qj">Vコンテが弱いと、後半の作業がすべて破綻する。</div>
+          </div>
+        </div>
+        <div class="grid2 anim d3" style="gap:22px;">
+          <div class="card"><div class="k"><span class="n">⏱</span>時間 TIME</div></div>
+          <div class="card"><div class="k"><span class="n">♪</span>音 SOUND</div></div>
+          <div class="card"><div class="k"><span class="n">↗</span>動き MOTION</div></div>
+          <div class="card hl"><div class="k"><span class="n">▣</span>カメラ CAMERA</div></div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 03 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 04 · SECTION BREAKDOWN -->
+  <section class="slide" data-label="Section Breakdown">
+    <div class="ghost-num">3</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">03</span><span class="bar"></span>SECTION BREAKDOWN</div>
+        <div class="row"><div><h2 class="s-title">楽曲のセクション分解</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">映像化の第一歩は“曲の構造理解”</div></div></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:40px;">
+        <div class="track anim d2">
+          <div class="seg" style="flex:1.0;background:linear-gradient(180deg,#1a3a52,#102a3e);"><div class="sl">イントロ</div><div class="se">INTRO</div></div>
+          <div class="seg" style="flex:1.4;background:linear-gradient(180deg,#243a6e,#16264a);"><div class="sl">Aメロ</div><div class="se">VERSE</div></div>
+          <div class="seg" style="flex:1.2;background:linear-gradient(180deg,#5a2c7a,#3a1a52);"><div class="sl">Bメロ</div><div class="se">PRE</div></div>
+          <div class="seg" style="flex:1.6;background:linear-gradient(180deg,#b03a8a,#7a2462);"><div class="sl">サビ</div><div class="se">CHORUS</div></div>
+          <div class="seg" style="flex:1.0;background:linear-gradient(180deg,#3a2c6e,#241a4a);"><div class="sl">間奏</div><div class="se">BRIDGE</div></div>
+          <div class="seg" style="flex:1.6;background:linear-gradient(180deg,#c93a7a,#8a2456);"><div class="sl">ラストサビ</div><div class="se">LAST</div></div>
+        </div>
+        <div class="note anim d3">各セクションの<b>“役割”</b>を決めることが、映像化の出発点になる。</div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 03 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 05 · PRE-COMP STRUCTURE -->
+  <section class="slide" data-label="Pre-comp Structure">
+    <div class="ghost-num">3</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">04</span><span class="bar"></span>PRE-COMP STRUCTURE</div>
+        <div class="row"><div><h2 class="s-title">プリコン構造の作り方</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">プリコンは“フォルダ”ではなく“機能の単位”</div></div></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:22px;min-height:0;">
+        <div class="plate contain anim d2" style="flex:1;min-height:0;background:#efeaf7;">
+          <img src="assets/ae_layers.jpg" alt="レイヤー分けガイド">
+          <span class="pc tl"></span><span class="pc tr"></span><span class="pc bl"></span><span class="pc br"></span>
+          <div class="tag">LAYER GUIDE — 00_MASTER / 01_BASE / 02_HAIR …</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:30px;justify-content:space-between;">
+          <div class="chips anim d3">
+            <span class="chip gold">SC_A_01</span><span class="chip gold">SC_SABI_01</span>
+            <span class="chip gold">TXT_SABI_01</span><span class="chip gold">BG_MAIN</span>
+          </div>
+          <div class="note anim d3" style="flex-shrink:0;"><b class="hot">役割が混ざると</b>、後で必ず破綻する。</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 03 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 06 · COMPOSITION -->
+  <section class="slide" data-label="Composition">
+    <div class="ghost-num">3</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">05</span><span class="bar"></span>COMPOSITION · MV</div>
+        <div class="row"><div><h2 class="s-title">構図の基本</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">構図は“視線誘導”のために存在する</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <ul class="blist anim d2">
+          <li><b>三分割構図</b>で主役を置く</li>
+          <li>主役の位置（キャラ or 歌詞）を決める</li>
+          <li><b>余白</b>を設計する</li>
+          <li>キャラと歌詞の<b class="hot">重なりを回避</b></li>
+          <li>画面密度を調整する（詰めすぎない）</li>
+        </ul>
+        <div class="anim d3">
+          <div class="rot">
+            <span class="pt main"></span>
+            <span class="pt sub"></span>
+            <span class="lbl" style="left:33.33%;top:66.66%;transform:translate(-50%,28px);">主役 / キャラ</span>
+            <span class="lbl" style="left:66.66%;top:33.33%;transform:translate(-50%,-32px);">歌詞</span>
+          </div>
+          <div class="kick" style="margin-top:14px;text-align:center;">RULE OF THIRDS — 視聴者が迷わない画面</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 03 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 07 · CAMERA MOVES -->
+  <section class="slide" data-label="Camera Moves">
+    <div class="ghost-num">3</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">06</span><span class="bar"></span>CAMERA WORK</div>
+        <div class="row"><div><h2 class="s-title">カメラワークの基礎</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">カメラは“感情の方向”を示すツール</div></div></div>
+      </div>
+      <div class="grid3 anim d2" style="flex:1;align-content:center;gap:30px;">
+        <div class="card hl"><div class="k"><span class="n">1</span>寄り — DOLLY IN</div><div class="d" style="margin-top:6px;">感情の強調・サビの盛り上がり。近づくほど、気持ちが高まる。</div></div>
+        <div class="card"><div class="k"><span class="n">2</span>引き — DOLLY OUT</div><div class="d" style="margin-top:6px;">余韻・静けさ。世界の広がりと孤独を見せる。</div></div>
+        <div class="card"><div class="k"><span class="n">3</span>パン — PAN</div><div class="d" style="margin-top:6px;">歌詞の流れ・視線誘導。左右の移動で物語を運ぶ。</div></div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 03 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 08 · NULL PARENTING -->
+  <section class="slide" data-label="Null Parenting">
+    <div class="ghost-num">3</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">07</span><span class="bar"></span>NULL PARENTING</div>
+        <div class="row"><div><h2 class="s-title">カメラ操作：ヌル親子構造</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">カメラは直接動かさない — プロの現場では100%この方法</div></div></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:50px;">
+        <div class="nulld anim d2" style="max-width:900px;">
+          <div class="nbox null"><div class="nt">NULL</div><div class="nv">ヌルを動かす</div></div>
+          <div class="narrow"></div>
+          <div class="nbox"><div class="nt">CAMERA</div><div class="nv">安定した動き</div></div>
+        </div>
+        <ul class="blist anim d3" style="gap:16px;">
+          <li>カメラ → ヌルに<b>親子付け</b>する</li>
+          <li><b>位置と回転を分離</b>できる</li>
+          <li>複雑な動きでも<b class="hot">破綻しない</b></li>
+        </ul>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 03 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 09 · EYE FLOW -->
+  <section class="slide" data-label="Eye Flow">
+    <div class="ghost-num">3</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">08</span><span class="bar"></span>GUIDING THE EYE</div>
+        <div class="row"><div><h2 class="s-title">視線誘導の設計</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">視聴者の“目線の流れ”を作る</div></div></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:40px;">
+        <div class="steps anim d2">
+          <div class="st"><div class="sn">01</div><div class="sb"><div class="stt">キャラ → 歌詞 → キャラ の循環</div><div class="sd">視線が自然に巡る回遊をつくる</div></div></div>
+          <div class="st"><div class="sn">02</div><div class="sb"><div class="stt">左→右、上→下 の動線</div><div class="sd">読む方向に沿わせると心地よい</div></div></div>
+          <div class="st"><div class="sn">03</div><div class="sb"><div class="stt">画面の“主役”を常に1つに</div><div class="sd">情報量を増やしすぎない</div></div></div>
+        </div>
+        <div class="note anim d3">視線誘導ができると、画面が一気に<b class="neon">“プロっぽく”</b>なる。</div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 03 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 10 · DEMO -->
+  <section class="slide" data-label="Demo">
+    <div class="divwrap">
+      <div class="di"><img src="assets/deepsea.jpg" alt="" style="object-position:50% 50%;"></div>
+      <div class="scrim"></div>
+    </div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad" style="justify-content:center;">
+      <div class="eyebrow anim" style="margin-bottom:22px;"><span class="ix">09</span><span class="bar"></span>LIVE DEMO · 30 SEC</div>
+      <h2 class="s-title grad anim d1" style="font-size:74px;margin-bottom:14px;">実演：30秒Vコンテ制作</h2>
+      <div class="s-jp serif anim d2" style="font-size:24px;color:rgba(248,239,255,0.82);margin-bottom:34px;max-width:820px;">完成形のイメージを共有する</div>
+      <div class="chips anim d3" style="gap:14px;">
+        <span class="chip gold">プリコン作成</span>
+        <span class="chip gold">仮素材で構成</span>
+        <span class="chip on">カメラワーク追加</span>
+        <span class="chip gold">歌詞位置の調整</span>
+        <span class="chip gold">画面密度を整える</span>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 03 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 11 · WORKSHOP -->
+  <section class="slide" data-label="Workshop">
+    <div class="ghost-num">3</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">10</span><span class="bar"></span>WORKSHOP · 30 MIN</div>
+        <div class="row"><div><h2 class="s-title">ワーク：Vコンテ制作</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">30〜45秒 — 映像の“流れ”を作る</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="checks empty anim d2">
+          <div class="ci"><span class="cd"></span><span>Aメロ〜サビの<b>Vコンテ</b></span></div>
+          <div class="ci"><span class="cd"></span><span>プリコン構造を組む</span></div>
+          <div class="ci"><span class="cd"></span><span><b class="hot">カメラワーク</b>を1つ以上</span></div>
+          <div class="ci"><span class="cd"></span><span>歌詞の仮配置</span></div>
+          <div class="ci"><span class="cd"></span><span>マーカーに合わせたタイミング設計</span></div>
+        </div>
+        <div class="card anim d3">
+          <div class="k">講評ポイント — REVIEW</div>
+          <ul class="blist" style="margin-top:12px;gap:13px;">
+            <li style="font-size:20px;">構図の<b>安定感</b></li>
+            <li style="font-size:20px;">カメラの<b>意図</b></li>
+            <li style="font-size:20px;">視線誘導の自然さ</li>
+            <li style="font-size:20px;">画面密度のバランス</li>
+            <li style="font-size:20px;">セクションごとの<b class="hot">役割</b>が明確か</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 03 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 12 · HOMEWORK -->
+  <section class="slide" data-label="Homework">
+    <div class="divwrap">
+      <div class="di"><img src="assets/char_dance.jpg" alt="" style="object-position:50% 18%;"></div>
+      <div class="scrim"></div>
+    </div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad" style="justify-content:center;">
+      <div class="eyebrow anim" style="margin-bottom:22px;"><span class="ix">11</span><span class="bar"></span>HOMEWORK → NEXT</div>
+      <h2 class="s-title grad anim d1" style="font-size:80px;margin-bottom:34px;">宿題</h2>
+      <div class="checks empty anim d2" style="max-width:820px;">
+        <div class="ci"><span class="cd"></span><span>楽曲全体のVコンテ（<b>最低60秒</b>）</span></div>
+        <div class="ci"><span class="cd"></span><span>プリコン構造の整理（<b>命名規則を統一</b>）</span></div>
+        <div class="ci"><span class="cd"></span><span>カメラワークを<b class="neon">2箇所以上</b>入れる</span></div>
+      </div>
+      <div class="note anim d3" style="margin-top:42px;font-size:26px;">NEXT — SESSION 04 <b>パララックスと空間演出（2.5D）</b></div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 03 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+</deck-stage>
+<script src="deck-stage.js"></script>
+<script src="deck-init.js"></script>
+</body>
+</html>

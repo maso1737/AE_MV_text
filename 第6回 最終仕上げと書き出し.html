@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第6回 最終仕上げと書き出し — Deep Prism MV Workshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,700;0,900;1,700;1,900&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700;800&family=Noto+Serif+JP:wght@400;600;800&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="deck.css">
+<style>
+  .cover-grid{position:absolute;inset:0;display:grid;grid-template-columns:1.15fr 0.85fr;z-index:2;}
+  .cover-l{padding:118px 0 118px 132px;display:flex;flex-direction:column;justify-content:center;}
+  .cover-r{position:relative;overflow:hidden;background:#05030d;}
+  .cover-r img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;}
+  .cover-r .vscrim{position:absolute;inset:0;background:linear-gradient(90deg,#07030f 0%,rgba(7,3,15,0.3) 30%,transparent 62%);}
+  .cover-sess{font-family:var(--orn);font-style:italic;font-weight:700;font-size:300px;line-height:0.8;letter-spacing:-0.04em;
+    color:transparent;background:var(--grad-spot);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 40px rgba(255,79,168,0.3));}
+  /* layer stack diagram */
+  .lstack{display:flex;flex-direction:column;gap:7px;}
+  .lstack .lrow{display:flex;align-items:center;gap:16px;padding:13px 20px;border-radius:5px;border:1px solid rgba(255,210,122,0.2);
+    background:linear-gradient(90deg,rgba(255,79,168,0.05),rgba(184,80,255,0.02));}
+  .lstack .lrow .ln{font-family:var(--mono);font-size:13px;letter-spacing:0.2em;color:var(--lavender);width:30px;}
+  .lstack .lrow .lk{font-family:var(--mono);font-size:13px;letter-spacing:0.22em;color:var(--gold);text-transform:uppercase;width:130px;}
+  .lstack .lrow .ld{font-family:var(--jp);font-weight:700;font-size:19px;color:#fff;}
+  .lstack .lrow.top{border-color:rgba(90,233,255,0.4);box-shadow:0 0 16px rgba(90,233,255,0.12);}
+  .lstack .lrow.grade{border-color:rgba(255,79,168,0.4);}
+  /* color grade swatch */
+  .grade-demo{display:flex;height:260px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,210,122,0.25);}
+  .grade-demo .gd{flex:1;display:flex;align-items:flex-end;padding:16px;font-family:var(--mono);font-size:13px;letter-spacing:0.16em;color:#fff;text-shadow:0 1px 3px #000;}
+  .grade-demo .raw{background:linear-gradient(160deg,#3a4a5e,#26303e);}
+  .grade-demo .graded{background:linear-gradient(160deg,#1a2a5e,#4a1a52 60%,#7a2462);position:relative;}
+  .grade-demo .graded::after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 80px 10px rgba(7,3,15,0.6);}
+  /* recap grid */
+  .recap{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .recap .rc{position:relative;padding:22px 24px;border-radius:6px;border:1px solid rgba(255,210,122,0.18);overflow:hidden;
+    background:linear-gradient(180deg,rgba(255,79,168,0.06),rgba(184,80,255,0.02));}
+  .recap .rc .rn{font-family:var(--orn);font-style:italic;font-weight:700;font-size:30px;color:var(--gold);filter:drop-shadow(0 0 12px rgba(255,210,122,0.4));}
+  .recap .rc .rt{font-family:var(--jp);font-weight:700;font-size:22px;color:#fff;margin-top:4px;}
+  .recap .rc .re{font-family:var(--mono);font-size:12px;letter-spacing:0.2em;color:var(--lavender);text-transform:uppercase;margin-top:6px;}
+</style>
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+
+  <!-- 01 · COVER -->
+  <section class="slide" data-label="Cover">
+    <div class="cover-grid">
+      <div class="cover-l">
+        <div class="eyebrow anim" style="margin-bottom:30px;">幽ヶ崎 海月 · DEEP PRISM<span class="bar"></span>AE LYRIC MV WORKSHOP</div>
+        <div class="cover-sess anim d1">06</div>
+        <h1 class="s-title grad anim d2" style="font-size:84px;margin-top:6px;">FINAL CUT<br>&amp; EXPORT</h1>
+        <div class="s-jp serif anim d3" style="font-size:36px;margin-top:18px;letter-spacing:0.12em;">最終仕上げと書き出し — YouTube最適化</div>
+        <div class="lead anim d4" style="font-size:21px;margin-top:26px;max-width:680px;">映像を<span class="neon">“作品”</span>として完成させる。<br>色調・質感・構造を整え、公開に耐える完成形へ。</div>
+        <div class="chips anim d5" style="margin-top:34px;">
+          <span class="chip on">COLOR GRADE</span>
+          <span class="chip gold">GRAIN</span>
+          <span class="chip gold">H.264 · THUMB</span>
+        </div>
+      </div>
+      <div class="cover-r">
+        <img src="assets/stage_bg.jpg" alt="ステージ ライブ">
+        <div class="vscrim"></div>
+        <div class="corner tr"></div><div class="corner br"></div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>KINETIC STAGE</b><span class="dot"></span>VTUBER MUSIC VIDEO · AFTER EFFECTS</div>
+      <div class="cr">SESSION 06 / 06</div>
+    </footer>
+  </section>
+
+  <!-- 02 · GOALS -->
+  <section class="slide" data-label="Goals">
+    <div class="ghost-num">6</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">01</span><span class="bar"></span>TODAY'S GOALS</div>
+        <div class="row"><div><h2 class="s-title">今日のゴール</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">MVとして公開できる“完成形”を作る</div></div></div>
+      </div>
+      <div class="cols c2-wide-l" style="align-items:center;">
+        <ul class="blist anim d2">
+          <li>MV全体の<b>色調を統一</b>できる</li>
+          <li><b>グレイン</b>で素材を馴染ませられる</li>
+          <li><b>最終コンポ</b>を正しく組める</li>
+          <li>YouTube向けの<b>書き出し設定</b>ができる</li>
+          <li><b class="hot">サムネイル</b>を制作できる</li>
+        </ul>
+        <div class="quote anim d3">
+          <div class="qe">“From draft to release.”</div>
+          <div class="qj">違和感ゼロが、完成の基準。</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 06 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 03 · PIPELINE -->
+  <section class="slide" data-label="Finishing Pipeline">
+    <div class="ghost-num">6</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">02</span><span class="bar"></span>FINISHING PIPELINE</div>
+        <div class="row"><div><h2 class="s-title">仕上げ工程の全体像</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">この工程で作品の“完成度”が決まる</div></div></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:54px;">
+        <div class="flow anim d2">
+          <div class="fn on"><div class="fnum">1</div><div class="fdot">◑</div><div class="ft">色調統一</div><div class="fe">GRADING</div></div>
+          <div class="fn on"><div class="fnum">2</div><div class="fdot">▒</div><div class="ft">ノイズ追加</div><div class="fe">GRAIN</div></div>
+          <div class="fn on"><div class="fnum">3</div><div class="fdot">▣</div><div class="ft">最終コンポ</div><div class="fe">COMPOSITE</div></div>
+          <div class="fn on"><div class="fnum">4</div><div class="fdot">▶</div><div class="ft">書き出し</div><div class="fe">EXPORT</div></div>
+          <div class="fn on"><div class="fnum">5</div><div class="fdot">▦</div><div class="ft">サムネイル</div><div class="fe">THUMBNAIL</div></div>
+        </div>
+        <div class="note anim d3" style="justify-content:center;">最終仕上げ＝<b class="neon">世界観の統一</b>。</div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 06 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 04 · COLOR GRADING -->
+  <section class="slide" data-label="Color Grading">
+    <div class="ghost-num">6</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">03</span><span class="bar"></span>COLOR GRADING</div>
+        <div class="row"><div><h2 class="s-title">色調統一</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">色調が揃うと“プロの映像”に見える</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="anim d2">
+          <div class="grade-demo">
+            <div class="gd raw">BEFORE — 素材のまま</div>
+            <div class="gd graded">AFTER — Deep Prism グレード</div>
+          </div>
+          <div class="kick" style="margin-top:14px;text-align:center;">影 / 中間 / ハイライトを整え、色温度を合わせる</div>
+        </div>
+        <ul class="blist anim d3" style="gap:16px;">
+          <li>キャラの<b>肌色</b>が破綻していないか</li>
+          <li>背景が<b>主役を奪っていない</b>か</li>
+          <li>サビだけ少し明るくするのも有効</li>
+          <li>全体の<b class="hot">コントラストを統一</b></li>
+        </ul>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 06 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 05 · LUT vs CURVES -->
+  <section class="slide" data-label="LUT vs Curves">
+    <div class="ghost-num">6</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">04</span><span class="bar"></span>LUT &amp; MANUAL GRADE</div>
+        <div class="row"><div><h2 class="s-title">LUTと手動カーブ</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">LUTは“調整レイヤー経由”が鉄則 — なくてもOK</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:stretch;">
+        <div class="card anim d2">
+          <div class="k">◔ LUT — プリセット</div>
+          <ol class="steps" style="margin-top:14px;gap:12px;">
+            <li class="st"><div class="sn" style="font-size:32px;width:40px;">1</div><div class="sb"><div class="stt" style="font-size:20px;">調整レイヤーを最上部に</div></div></li>
+            <li class="st"><div class="sn" style="font-size:32px;width:40px;">2</div><div class="sb"><div class="stt" style="font-size:20px;">Apply Color LUT を追加</div></div></li>
+            <li class="st"><div class="sn" style="font-size:32px;width:40px;">3</div><div class="sb"><div class="stt" style="font-size:20px;">フリーLUTを読み込む</div></div></li>
+            <li class="st"><div class="sn" style="font-size:32px;width:40px;">4</div><div class="sb"><div class="stt" style="font-size:20px;">不透明度を<b class="neon">30〜60%</b>に</div></div></li>
+          </ol>
+        </div>
+        <div class="card anim d3">
+          <div class="k">◵ CURVES — 手動（LUTなし）</div>
+          <ul class="blist" style="margin-top:14px;gap:13px;">
+            <li style="font-size:19px;"><b>RGB</b>：S字カーブでコントラスト</li>
+            <li style="font-size:19px;"><b class="hot">R</b>：シャドウに足す → 温かみ</li>
+            <li style="font-size:19px;"><b class="neon">B</b>：ハイライトを引く → 映画調</li>
+            <li style="font-size:19px;">Levels 出力を235に → 柔らかく</li>
+          </ul>
+          <div class="note" style="margin-top:14px;font-size:18px;">ガンマシフト対策：リニア変換を<b>OFF</b></div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 06 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 06 · GRAIN -->
+  <section class="slide" data-label="Grain">
+    <div class="ghost-num">6</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">05</span><span class="bar"></span>GRAIN — THE GLUE</div>
+        <div class="row"><div><h2 class="s-title">グレインの役割</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">グレインは“素材を馴染ませる接着剤”</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <ul class="blist anim d2">
+          <li>CG特有の<b>“綺麗すぎる質感”</b>を消す</li>
+          <li>キャラ・背景・エフェクトを統一</li>
+          <li><b class="neon">0.3〜1.0%</b>の弱いノイズが最適</li>
+        </ul>
+        <div class="readout anim d3">
+          <div class="rr"><span class="rk">推奨ノイズ量</span><span class="rv big live">0.3–1.0<span style="font-size:20px;">%</span></span></div>
+          <div class="rr"><span class="rk">役割</span><span class="rv" style="font-size:22px;">統一感の付与</span></div>
+          <div class="rr"><span class="rk">過剰にすると</span><span class="rv" style="font-size:22px;color:var(--rouge);">“汚れ”になる</span></div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 06 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 07 · FINAL COMP STRUCTURE -->
+  <section class="slide" data-label="Final Comp">
+    <div class="ghost-num">6</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">06</span><span class="bar"></span>FINAL COMP STRUCTURE</div>
+        <div class="row"><div><h2 class="s-title">最終コンポ構造</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">順番が崩れると画面が破綻する — 上から順に重ねる</div></div></div>
+      </div>
+      <div class="cols c2-wide-r" style="align-items:center;">
+        <div class="lstack anim d2">
+          <div class="lrow grade"><span class="ln">08</span><span class="lk">GRAIN</span><span class="ld">グレイン</span></div>
+          <div class="lrow grade"><span class="ln">07</span><span class="lk">GRADE</span><span class="ld">カラーグレーディング</span></div>
+          <div class="lrow top"><span class="ln">06</span><span class="lk">FX</span><span class="ld">撮影効果（グロー・色収差・シェイク）</span></div>
+          <div class="lrow"><span class="ln">05</span><span class="lk">TEXT</span><span class="ld">歌詞（テキスト）</span></div>
+          <div class="lrow"><span class="ln">04</span><span class="lk">CHARA</span><span class="ld">キャラクター</span></div>
+          <div class="lrow"><span class="ln">03</span><span class="lk">FG</span><span class="ld">前景・装飾</span></div>
+          <div class="lrow"><span class="ln">02</span><span class="lk">MG</span><span class="ld">中景・パララックス</span></div>
+          <div class="lrow"><span class="ln">01</span><span class="lk">BG</span><span class="ld">背景</span></div>
+        </div>
+        <div class="stack anim d3">
+          <div class="quote">
+            <div class="qe">“Order is everything.”</div>
+            <div class="qj">グレイン・グレードは必ず“最上層”に置く。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 06 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 08 · FINAL CHECK -->
+  <section class="slide" data-label="Final Check">
+    <div class="ghost-num">6</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">07</span><span class="bar"></span>PRE-FLIGHT CHECK</div>
+        <div class="row"><div><h2 class="s-title">最終チェックポイント</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">“違和感ゼロ”が完成の基準</div></div></div>
+      </div>
+      <div class="grid2 anim d2" style="flex:1;align-content:center;grid-template-columns:1fr 1fr;gap:18px 56px;">
+        <div class="checks empty"><div class="ci"><span class="cd"></span><span><b>音ズレ</b>がないか</span></div></div>
+        <div class="checks empty"><div class="ci"><span class="cd"></span><span>歌詞の<b>誤字・タイミング</b></span></div></div>
+        <div class="checks empty"><div class="ci"><span class="cd"></span><span>カメラの揺れが<b>強すぎないか</b></span></div></div>
+        <div class="checks empty"><div class="ci"><span class="cd"></span><span><b>色</b>が破綻していないか</span></div></div>
+        <div class="checks empty"><div class="ci"><span class="cd"></span><span>画面の<b>明るさ</b>が適切か</span></div></div>
+        <div class="checks empty"><div class="ci"><span class="cd"></span><span><b>パララックス</b>が破綻していないか</span></div></div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 06 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 09 · EXPORT SETTINGS -->
+  <section class="slide" data-label="Export">
+    <div class="ghost-num">6</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">08</span><span class="bar"></span>EXPORT · YOUTUBE 1080P</div>
+        <div class="row"><div><h2 class="s-title">書き出し設定</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">YouTubeは“高ビットレートほど綺麗に残る”</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="readout anim d2">
+          <div class="rr"><span class="rk">Format</span><span class="rv" style="font-size:26px;">H.264</span></div>
+          <div class="rr"><span class="rk">Preset</span><span class="rv" style="font-size:22px;">YouTube 1080p</span></div>
+          <div class="rr"><span class="rk">Bitrate</span><span class="rv live">20–30 <span style="font-size:18px;">Mbps</span></span></div>
+          <div class="rr"><span class="rk">Frame Rate</span><span class="rv" style="font-size:26px;">29.97 <span style="font-size:18px;">fps</span></span></div>
+        </div>
+        <div class="stack anim d3" style="gap:16px;">
+          <div class="card"><div class="k">⚙ 必ずONにする</div>
+            <div class="chips" style="margin-top:10px;">
+              <span class="chip gold">Render at Maximum Depth</span>
+              <span class="chip gold">Use Maximum Render Quality</span>
+            </div>
+          </div>
+          <div class="card hl"><div class="k">⚠ 書き出し時の注意</div>
+            <ul class="blist" style="margin-top:8px;gap:9px;">
+              <li style="font-size:18px;">黒つぶれ／白飛びがないか</li>
+              <li style="font-size:18px;">音量 <b class="neon">-14〜-12 LUFS</b></li>
+              <li style="font-size:18px;">冒頭1秒は黒にしない</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 06 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 10 · THUMBNAIL -->
+  <section class="slide" data-label="Thumbnail">
+    <div class="ghost-num">6</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">09</span><span class="bar"></span>THUMBNAIL — THE FACE</div>
+        <div class="row"><div><h2 class="s-title">サムネイル制作</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">サムネイルは“作品の入口” — 出来で再生数が変わる</div></div></div>
+      </div>
+      <div class="cols c2-wide-r" style="align-items:center;">
+        <ul class="blist anim d2">
+          <li>GPTで生成した<b>キャラ</b>を使用</li>
+          <li><b>明るい色・大きい文字</b></li>
+          <li><b>3〜5語</b>の短いタイトル</li>
+          <li><b class="hot">目線がカメラ</b>を見る構図が強い</li>
+        </ul>
+        <div class="plate anim d3" style="height:480px;">
+          <img src="assets/eyes_crystal.jpg" alt="サムネイル作例" style="object-position:50% 30%;">
+          <span class="pc tl"></span><span class="pc tr"></span><span class="pc bl"></span><span class="pc br"></span>
+          <div class="tag">THUMBNAIL — SAMPLE</div>
+          <div style="position:absolute;left:34px;top:50%;transform:translateY(-50%);z-index:3;">
+            <div style="font-family:var(--disp);font-style:italic;font-weight:900;font-size:64px;line-height:0.92;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,0.8),0 0 30px rgba(255,79,168,0.5);">DEEP<br>PRISM</div>
+          </div>
+          <div class="cap">明るい色・大きな文字・カメラ目線 — クリックされる顔</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 06 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 11 · WORKSHOP -->
+  <section class="slide" data-label="Workshop">
+    <div class="ghost-num">6</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">10</span><span class="bar"></span>WORKSHOP · 30 MIN</div>
+        <div class="row"><div><h2 class="s-title">ワーク：最終仕上げ</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">MVとして公開できる状態にする</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="checks empty anim d2">
+          <div class="ci"><span class="cd"></span><span>全曲の<b>色調統一</b></span></div>
+          <div class="ci"><span class="cd"></span><span><b>グレイン</b>追加</span></div>
+          <div class="ci"><span class="cd"></span><span>最終コンポ整理</span></div>
+          <div class="ci"><span class="cd"></span><span>書き出し（<b class="hot">1分以内</b>）</span></div>
+          <div class="ci"><span class="cd"></span><span>サムネイル制作</span></div>
+        </div>
+        <div class="card anim d3">
+          <div class="k">講評ポイント — REVIEW</div>
+          <ul class="blist" style="margin-top:12px;gap:13px;">
+            <li style="font-size:20px;">色調の<b>一貫性</b></li>
+            <li style="font-size:20px;">グレインの適量</li>
+            <li style="font-size:20px;">書き出しの設定</li>
+            <li style="font-size:20px;">サムネの<b class="hot">クリック性</b></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 06 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 12 · SERIES RECAP -->
+  <section class="slide" data-label="Series Recap">
+    <div class="ghost-num">6</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">11</span><span class="bar"></span>6 SESSIONS · WHAT YOU LEARNED</div>
+        <div class="row"><div><h2 class="s-title">6回で身についたスキル</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">企画から公開まで、MV制作の全工程</div></div></div>
+      </div>
+      <div class="recap anim d2" style="flex:1;align-content:center;">
+        <div class="rc"><div class="rn">01</div><div class="rt">AI素材生成</div><div class="re">GPT / SUNO</div></div>
+        <div class="rc"><div class="rn">02</div><div class="rt">楽曲解析</div><div class="re">BPM / MARKER</div></div>
+        <div class="rc"><div class="rn">03</div><div class="rt">Vコンテ制作</div><div class="re">COMPOSITION / CAMERA</div></div>
+        <div class="rc"><div class="rn">04</div><div class="rt">パララックス</div><div class="re">2.5D SPACE</div></div>
+        <div class="rc"><div class="rn">05</div><div class="rt">撮影効果</div><div class="re">GLOW / SHAKE</div></div>
+        <div class="rc"><div class="rn">06</div><div class="rt">書き出し・サムネ</div><div class="re">EXPORT / THUMBNAIL</div></div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 06 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 13 · OUTRO -->
+  <section class="slide" data-label="Outro">
+    <div class="divwrap">
+      <div class="di"><img src="assets/poster_water.jpg" alt="" style="object-position:50% 20%;"></div>
+      <div class="scrim" style="background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(7,3,15,0.5),rgba(7,3,15,0.92));"></div>
+    </div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad" style="justify-content:center;align-items:center;text-align:center;">
+      <div class="eyebrow anim" style="margin-bottom:26px;justify-content:center;">DEEP PRISM · AE LYRIC MV WORKSHOP<span class="bar"></span>FIN</div>
+      <h2 class="s-title grad anim d1" style="font-size:96px;margin-bottom:24px;">YOU CAN MAKE<br>AN MV NOW.</h2>
+      <div class="s-jp serif anim d2" style="font-size:30px;color:rgba(248,239,255,0.9);max-width:1000px;line-height:1.7;">あなたはもう、<b class="neon" style="font-weight:800;">“MVを1人で作れる”</b>レベルに到達している。</div>
+      <div class="kick anim d3" style="margin-top:40px;">幽ヶ崎 海月 — DEEP PRISM · LIGHT, AND THE DEEP SEA</div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 06 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+</deck-stage>
+<script src="deck-stage.js"></script>
+<script src="deck-init.js"></script>
+</body>
+</html>

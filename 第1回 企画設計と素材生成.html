@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第1回 企画設計と素材生成 — Deep Prism MV Workshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,700;0,900;1,700;1,900&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700;800&family=Noto+Serif+JP:wght@400;600;800&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="deck.css">
+<style>
+  /* deck-1 local: cover */
+  .cover-grid{position:absolute;inset:0;display:grid;grid-template-columns:1.15fr 0.85fr;z-index:2;}
+  .cover-l{padding:118px 0 118px 132px;display:flex;flex-direction:column;justify-content:center;}
+  .cover-r{position:relative;overflow:hidden;}
+  .cover-r img{width:100%;height:100%;object-fit:cover;object-position:50% 28%;}
+  .cover-r .vscrim{position:absolute;inset:0;background:linear-gradient(90deg,#07030f 0%,rgba(7,3,15,0.25) 28%,transparent 60%),linear-gradient(0deg,rgba(7,3,15,0.6),transparent 40%);}
+  .cover-sess{font-family:var(--orn);font-style:italic;font-weight:700;font-size:300px;line-height:0.8;letter-spacing:-0.04em;
+    color:transparent;background:var(--grad-spot);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 40px rgba(255,79,168,0.3));}
+  .logo-strip{height:118px;width:auto;border:1px solid rgba(255,210,122,0.3);border-radius:6px;box-shadow:0 0 30px rgba(184,80,255,0.25);}
+</style>
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+
+  <!-- 01 · COVER / 扉 -->
+  <section class="slide" data-label="Cover">
+    <div class="cover-grid">
+      <div class="cover-l">
+        <div class="eyebrow anim" style="margin-bottom:30px;">幽ヶ崎 海月 · DEEP PRISM<span class="bar"></span>AE LYRIC MV WORKSHOP</div>
+        <div class="cover-sess anim d1">01</div>
+        <h1 class="s-title grad anim d2" style="font-size:96px;margin-top:6px;">MATERIAL<br>GENESIS</h1>
+        <div class="s-jp serif anim d3" style="font-size:38px;margin-top:18px;letter-spacing:0.16em;">企画設計と素材生成</div>
+        <div class="lead anim d4" style="font-size:21px;margin-top:26px;max-width:680px;">AI素材でMVの世界観と方向性を決める。<br>GPTでキャラを、Sunoで楽曲を生成し、<span class="neon">“言葉と画像”</span>でコンセプトを語れる状態をつくる。</div>
+        <div class="chips anim d5" style="margin-top:34px;">
+          <span class="chip gold">GPT — ILLUST</span>
+          <span class="chip gold">SUNO — MUSIC</span>
+          <span class="chip on">AFTER EFFECTS</span>
+        </div>
+      </div>
+      <div class="cover-r">
+        <img src="assets/char_dance.jpg" alt="幽ヶ崎 海月">
+        <div class="vscrim"></div>
+        <div class="corner tr"></div><div class="corner br"></div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>KINETIC STAGE</b><span class="dot"></span>VTUBER MUSIC VIDEO · AFTER EFFECTS</div>
+      <div class="cr">SESSION 01 / 06</div>
+    </footer>
+  </section>
+
+  <!-- 02 · GOALS -->
+  <section class="slide" data-label="Goals">
+    <div class="ghost-num">1</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">01</span><span class="bar"></span>TODAY'S GOALS</div>
+        <div class="row"><div><h2 class="s-title">今日のゴール</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">この回が終わると、MVの“方向性”を語れるようになる</div></div></div>
+      </div>
+      <div class="cols c2-wide-l" style="align-items:center;">
+        <ul class="blist anim d2">
+          <li>GPTで<b>キャラクターイラスト</b>を生成する</li>
+          <li>Sunoで<b>歌詞付き楽曲</b>を生成する</li>
+          <li>楽曲の<b>感情曲線</b>を読み取り、世界観を言語化する</li>
+          <li>PureRefで<b>リファレンスボード</b>を構築する</li>
+          <li>MVの方向性を<b class="hot">“言葉と画像”</b>で説明できるようになる</li>
+        </ul>
+        <div class="plate anim d3" style="height:560px;">
+          <img src="assets/sketch.jpg" alt="キャラクターラフ">
+          <span class="pc tl"></span><span class="pc tr"></span><span class="pc bl"></span><span class="pc br"></span>
+          <div class="tag">CHARACTER — ROUGH</div>
+          <div class="cap">幽ヶ崎 海月 / 鉛筆ラフ → AI素材化の起点</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 01 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 03 · PIPELINE -->
+  <section class="slide" data-label="Pipeline">
+    <div class="ghost-num">1</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">02</span><span class="bar"></span>THE PIPELINE</div>
+        <div class="row"><div><h2 class="s-title">AI MV制作の全体像</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">7つの工程 — 本講座はこの流れを1本ずつ完成させていく</div></div></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:54px;">
+        <div class="flow anim d2">
+          <div class="fn on"><div class="fnum">01</div><div class="fdot">♪</div><div class="ft">楽曲生成</div><div class="fe">SUNO</div></div>
+          <div class="fn on"><div class="fnum">02</div><div class="fdot">✦</div><div class="ft">キャラ・背景</div><div class="fe">GPT</div></div>
+          <div class="fn on"><div class="fnum">03</div><div class="fdot">◴</div><div class="ft">世界観設計</div><div class="fe">COLOR · THEME</div></div>
+          <div class="fn"><div class="fnum">04</div><div class="fdot">▣</div><div class="ft">Vコンテ制作</div><div class="fe">AE</div></div>
+          <div class="fn"><div class="fnum">05</div><div class="fdot">⬚</div><div class="ft">パララックス</div><div class="fe">2.5D</div></div>
+          <div class="fn"><div class="fnum">06</div><div class="fdot">❋</div><div class="ft">撮影効果</div><div class="fe">GLOW · SHAKE</div></div>
+          <div class="fn"><div class="fnum">07</div><div class="fdot">▶</div><div class="ft">書き出し</div><div class="fe">EXPORT</div></div>
+        </div>
+        <div class="note anim d3" style="justify-content:center;">本日は <b>01 – 03</b>。素材と世界観という“すべての土台”をつくる。</div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 01 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 04 · SUNO -->
+  <section class="slide" data-label="Suno">
+    <div class="ghost-num">1</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">03</span><span class="bar"></span>GENERATE THE SONG</div>
+        <div class="row"><div><h2 class="s-title">Sunoで楽曲生成</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">曲が決まらなければ、映像も決まらない</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="stack anim d2">
+          <ul class="blist">
+            <li>歌詞付き楽曲を生成する</li>
+            <li><b>曲調と世界観の一致</b>が最重要</li>
+            <li>歌詞の<b class="hot">“感情の流れ”</b>は後でVコンテに反映する</li>
+            <li>A・B・サビの<b>構造</b>を意識して生成する</li>
+          </ul>
+        </div>
+        <div class="stack anim d3">
+          <div class="readout">
+            <div class="rr"><span class="rk">Title</span><span class="rv">Deep Prism</span></div>
+            <div class="rr"><span class="rk">Genre</span><span class="rv" style="font-size:24px;">エレクトロニック × ロック</span></div>
+            <div class="rr"><span class="rk">Vocal</span><span class="rv" style="font-size:24px;">幽ヶ崎 海月</span></div>
+            <div class="rr"><span class="rk">BPM</span><span class="rv big live">128</span></div>
+          </div>
+          <div class="quote">
+            <div class="qe">“Light, and the deep sea.”</div>
+            <div class="qj">光と深海のはざまで、わたしはわたしを選ぶ。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 01 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 05 · GPT CHARACTER -->
+  <section class="slide" data-label="GPT Character">
+    <div class="ghost-num">1</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">04</span><span class="bar"></span>GENERATE THE CHARACTER</div>
+        <div class="row"><div><h2 class="s-title">GPTでキャラ生成</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">立ち絵・表情差分・背景 — そして“良いプロンプト”</div></div></div>
+      </div>
+      <div class="cols c2-wide-r" style="align-items:stretch;">
+        <div class="stack anim d2" style="gap:20px;">
+          <div class="grid2" style="gap:18px;">
+            <div class="card"><div class="k"><span class="n">A</span>立ち絵</div><div class="d">全身／バストアップ</div></div>
+            <div class="card"><div class="k"><span class="n">B</span>表情差分</div><div class="d">喜・悲・強・無</div></div>
+            <div class="card"><div class="k"><span class="n">C</span>背景</div><div class="d">抽象／街／ファンタジー</div></div>
+            <div class="card hl"><div class="k"><span class="n">D</span>一貫性</div><div class="d">同一キャラを保つ指示</div></div>
+          </div>
+          <div class="card" style="padding:22px 26px;">
+            <div class="k">良いプロンプトの5条件</div>
+            <div class="chips" style="margin-top:6px;">
+              <span class="chip">性格</span><span class="chip">色調</span><span class="chip">世界観</span><span class="chip">カメラ距離</span><span class="chip">ライティング</span>
+            </div>
+          </div>
+        </div>
+        <div class="plate anim d3" style="height:100%;min-height:520px;">
+          <img src="assets/settei.jpg" alt="キャラクター設定図">
+          <span class="pc tl"></span><span class="pc tr"></span><span class="pc bl"></span><span class="pc br"></span>
+          <div class="tag">CHARACTER SHEET</div>
+          <div class="cap">三面図・表情差分・カラーパレットまで1枚に — 設定図の作例</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 01 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 06 · 4 AXES -->
+  <section class="slide" data-label="4 Axes">
+    <div class="ghost-num">1</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">05</span><span class="bar"></span>WORLDVIEW · 4 AXES</div>
+        <div class="row"><div><h2 class="s-title">世界観を決める4軸</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">この4つが揃うと、MVの方向性が明確になる</div></div></div>
+      </div>
+      <div class="grid4 anim d2" style="flex:1;align-content:center;gap:30px;">
+        <div class="card hl"><div class="k"><span class="n">1</span>COLOR — 色調</div><div class="d">深い紫と青を基調に、光のプリズムとネオン。水の揺らめき・宝石の反射。</div></div>
+        <div class="card"><div class="k"><span class="n">2</span>CHARACTER — キャラ性</div><div class="d">ミステリアスで芯のある歌い手。観測者（あなた）に語りかける存在。</div></div>
+        <div class="card"><div class="k"><span class="n">3</span>EMOTION — 感情曲線</div><div class="d">静かな語り → 上昇 → 解放。曲の起伏がそのまま映像の設計図になる。</div></div>
+        <div class="card"><div class="k"><span class="n">4</span>SYMBOL — モチーフ</div><div class="d">クラゲ・プリズム結晶・オルゴール・鍵。世界観を象徴する小物。</div></div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 01 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 07 · EMOTION CURVE -->
+  <section class="slide" data-label="Emotion Curve">
+    <div class="ghost-num">1</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">06</span><span class="bar"></span>EMOTION CURVE</div>
+        <div class="row"><div><h2 class="s-title">感情曲線の作り方</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">感情曲線は、Vコンテの“設計図”になる</div></div></div>
+      </div>
+      <div style="flex:1;position:relative;display:flex;flex-direction:column;justify-content:center;">
+        <svg class="anim d2" viewBox="0 0 1640 360" style="width:100%;height:360px;overflow:visible;">
+          <defs>
+            <linearGradient id="ecg" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#5AE9FF"/><stop offset="0.5" stop-color="#FF4FA8"/><stop offset="1" stop-color="#B58EFF"/>
+            </linearGradient>
+          </defs>
+          <line x1="0" y1="300" x2="1640" y2="300" stroke="rgba(181,142,255,0.18)" stroke-width="1"/>
+          <path d="M0,270 C200,260 280,250 420,230 C560,210 600,140 820,120 C1000,104 1040,40 1240,40 C1420,40 1480,150 1640,180"
+                fill="none" stroke="url(#ecg)" stroke-width="4" style="filter:drop-shadow(0 0 12px rgba(255,79,168,0.5));"/>
+          <g font-family="IBM Plex Mono" font-size="15" letter-spacing="2" fill="#FFD27A">
+            <circle cx="210" cy="262" r="6" fill="#5AE9FF"/><text x="210" y="345" text-anchor="middle">A メロ</text>
+            <circle cx="620" cy="158" r="6" fill="#FF4FA8"/><text x="620" y="345" text-anchor="middle">B メロ</text>
+            <circle cx="1140" cy="40" r="7" fill="#FF4FA8"/><text x="1140" y="345" text-anchor="middle">サビ</text>
+            <circle cx="1520" cy="160" r="6" fill="#B58EFF"/><text x="1520" y="345" text-anchor="middle">間奏</text>
+          </g>
+        </svg>
+        <div class="grid4 anim d3" style="grid-template-columns:repeat(4,1fr);gap:22px;margin-top:18px;">
+          <div class="card" style="padding:18px 22px;"><div class="k"><span class="neon">A メロ</span></div><div class="d">静か・語り</div></div>
+          <div class="card" style="padding:18px 22px;"><div class="k"><span class="hot">B メロ</span></div><div class="d">上昇・期待</div></div>
+          <div class="card hl" style="padding:18px 22px;"><div class="k"><span class="hot">サビ</span></div><div class="d">解放・広がり</div></div>
+          <div class="card" style="padding:18px 22px;"><div class="k"><span class="lav">間奏</span></div><div class="d">余韻・転換</div></div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 01 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 08 · REFERENCE BOARD -->
+  <section class="slide" data-label="Reference Board">
+    <div class="ghost-num">1</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">07</span><span class="bar"></span>REFERENCE BOARD · PUREREF</div>
+        <div class="row"><div><h2 class="s-title">リファレンス構成</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">4分類で組み、世界観を“視覚的に説明できる状態”にする</div></div></div>
+      </div>
+      <div class="cols c2-wide-r" style="align-items:center;">
+        <div class="stack anim d2" style="gap:18px;">
+          <div class="card"><div class="k"><span class="n">1</span>COLOR PALETTE — 色調</div></div>
+          <div class="card"><div class="k"><span class="n">2</span>MOTION STYLE — モーション</div></div>
+          <div class="card"><div class="k"><span class="n">3</span>TYPOGRAPHY — タイポ</div></div>
+          <div class="card"><div class="k"><span class="n">4</span>SPACE / LAYOUT — 空間</div></div>
+        </div>
+        <div class="plate anim d3" style="height:560px;">
+          <img src="assets/board.jpg" alt="MVイメージボード" style="object-position:50% 30%;">
+          <span class="pc tl"></span><span class="pc tr"></span><span class="pc bl"></span><span class="pc br"></span>
+          <div class="tag">IMAGE BOARD — DEEP PRISM</div>
+          <div class="cap">楽曲情報・コンセプト・配色・モチーフ・ショットリストを1枚に集約</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 01 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 09 · READING REFS -->
+  <section class="slide" data-label="Reading Refs">
+    <div class="ghost-num">1</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">08</span><span class="bar"></span>READING THE REFERENCE</div>
+        <div class="row"><div><h2 class="s-title">リファレンスの読み解き方</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">良いリファレンスは“理由”を説明できる</div></div></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:40px;">
+        <div class="steps anim d2" style="gap:26px;">
+          <div class="st"><div class="sn">01</div><div class="sb"><div class="stt">なぜ、この色が合うのか</div><div class="sd">深海の沈黙と、プリズムの光。色は感情の温度を決める。</div></div></div>
+          <div class="st"><div class="sn">02</div><div class="sb"><div class="stt">なぜ、この構図が心地よいのか</div><div class="sd">視線の流れと余白。気持ちよさには必ず理由がある。</div></div></div>
+          <div class="st"><div class="sn">03</div><div class="sb"><div class="stt">なぜ、この動きが曲に合うのか</div><div class="sd">BPMと感情曲線への一致。動きは音の翻訳である。</div></div></div>
+        </div>
+        <div class="note anim d3"><b>理由の言語化</b>こそ、プロのワークフロー。</div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 01 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 10 · FIND BPM -->
+  <section class="slide" data-label="Find BPM">
+    <div class="ghost-num">1</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">09</span><span class="bar"></span>FIND THE BPM</div>
+        <div class="row"><div><h2 class="s-title">SunoのBPMを調べる</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">次回の作業前に、必ずBPMを確認しておく</div></div></div>
+      </div>
+      <div class="grid3 anim d2" style="flex:1;align-content:center;gap:30px;">
+        <div class="card"><div class="k"><span class="n">1</span>曲情報を見る</div><div class="d">Sunoの曲ページにBPMが表示される場合がある。まずはここを確認。</div></div>
+        <div class="card"><div class="k"><span class="n">2</span>AEで波形を読む</div><div class="d"><span class="code">オーディオをキーフレームに変換</span> → 波形の拍間隔を目視で測る。</div></div>
+        <div class="card"><div class="k"><span class="n">3</span>解析ツール</div><div class="d">BPM Analyzer / Soundiiz などの無料ツールで自動解析する方法も有効。</div></div>
+      </div>
+      <div class="note anim d3" style="margin-top:6px;">数えた値は <b class="neon">必ずメモ</b> — SESSION 02 の音同期がここから始まる。</div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 01 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 11 · WORKSHOP -->
+  <section class="slide" data-label="Workshop">
+    <div class="ghost-num">1</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">10</span><span class="bar"></span>WORKSHOP · 20 MIN</div>
+        <div class="row"><div><h2 class="s-title">ワーク：リファレンス構築</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">20分で“方向性を1行で”まとめる</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="checks empty anim d2">
+          <div class="ci"><span class="cd"></span><span>GPTでキャラを<b>1枚</b>生成する</span></div>
+          <div class="ci"><span class="cd"></span><span>Sunoで楽曲を<b>1つ</b>生成する</span></div>
+          <div class="ci"><span class="cd"></span><span>PureRefで<b>4分類ボード</b>を作る</span></div>
+          <div class="ci"><span class="cd"></span><span>世界観の方向性を<b class="hot">1行</b>でまとめる</span></div>
+        </div>
+        <div class="quote anim d3">
+          <div class="qe">“State it in one line.”</div>
+          <div class="qj">夜のネオン × 切ない恋 × 疾走感のあるサビ</div>
+          <div style="font-family:var(--jp);font-size:17px;color:rgba(181,142,255,0.7);margin-top:14px;letter-spacing:0.06em;">— たった1行で世界観が伝われば、設計は成功している。</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 01 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 12 · HOMEWORK / NEXT -->
+  <section class="slide" data-label="Homework">
+    <div class="divwrap">
+      <div class="di"><img src="assets/profile_prism.jpg" alt="" style="object-position:60% 40%;"></div>
+      <div class="scrim"></div>
+    </div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad" style="justify-content:center;">
+      <div class="eyebrow anim" style="margin-bottom:22px;"><span class="ix">11</span><span class="bar"></span>HOMEWORK → NEXT</div>
+      <h2 class="s-title grad anim d1" style="font-size:80px;margin-bottom:34px;">宿題</h2>
+      <div class="checks empty anim d2" style="max-width:760px;">
+        <div class="ci"><span class="cd"></span><span>PureRefボード <span class="code">PNG</span></span></div>
+        <div class="ci"><span class="cd"></span><span>MVコンセプトシート <span class="code">PDF</span></span></div>
+        <div class="ci"><span class="cd"></span><span>GPT生成キャラ <span class="lav">1〜3枚</span></span></div>
+        <div class="ci"><span class="cd"></span><span>Suno楽曲 1曲 ＋ <b class="neon">BPMをメモ</b></span></div>
+      </div>
+      <div class="note anim d3" style="margin-top:42px;font-size:26px;">NEXT — SESSION 02 <b>BPM解析とタイミング設計（音同期）</b></div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 01 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+</deck-stage>
+<script src="deck-stage.js"></script>
+<script src="deck-init.js"></script>
+</body>
+</html>

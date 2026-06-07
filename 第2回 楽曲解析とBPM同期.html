@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第2回 楽曲解析とBPM同期 — Deep Prism MV Workshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,700;0,900;1,700;1,900&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700;800&family=Noto+Serif+JP:wght@400;600;800&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="deck.css">
+<style>
+  .cover-grid{position:absolute;inset:0;display:grid;grid-template-columns:1.15fr 0.85fr;z-index:2;}
+  .cover-l{padding:118px 0 118px 132px;display:flex;flex-direction:column;justify-content:center;}
+  .cover-r{position:relative;overflow:hidden;}
+  .cover-r img{width:100%;height:100%;object-fit:cover;object-position:50% 38%;}
+  .cover-r .vscrim{position:absolute;inset:0;background:linear-gradient(90deg,#07030f 0%,rgba(7,3,15,0.25) 28%,transparent 60%),linear-gradient(0deg,rgba(7,3,15,0.6),transparent 40%);}
+  .cover-sess{font-family:var(--orn);font-style:italic;font-weight:700;font-size:300px;line-height:0.8;letter-spacing:-0.04em;
+    color:transparent;background:var(--grad-spot);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 40px rgba(255,79,168,0.3));}
+  /* beat ticks decorative */
+  .beats{display:flex;gap:8px;align-items:flex-end;height:44px;margin-top:6px;}
+  .beats span{width:8px;background:linear-gradient(180deg,var(--ice),var(--rouge));border-radius:2px;box-shadow:0 0 8px rgba(90,233,255,0.5);}
+  .wave{display:flex;align-items:center;gap:5px;height:130px;width:100%;}
+  .wave i{flex:1;border-radius:3px;background:linear-gradient(180deg,var(--ice),var(--rouge));box-shadow:0 0 8px rgba(255,79,168,0.35);}
+  .wave .mk{flex:0 0 2px;height:130px;background:repeating-linear-gradient(180deg,var(--gold) 0 5px,transparent 5px 10px);box-shadow:0 0 8px rgba(255,210,122,0.6);}
+  .wave .mk.hot{background:var(--rouge);box-shadow:0 0 10px rgba(255,79,168,0.7);}
+</style>
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+
+  <!-- 01 · COVER -->
+  <section class="slide" data-label="Cover">
+    <div class="cover-grid">
+      <div class="cover-l">
+        <div class="eyebrow anim" style="margin-bottom:30px;">幽ヶ崎 海月 · DEEP PRISM<span class="bar"></span>AE LYRIC MV WORKSHOP</div>
+        <div class="cover-sess anim d1">02</div>
+        <h1 class="s-title grad anim d2" style="font-size:96px;margin-top:6px;">TEMPO<br>&amp; SYNC</h1>
+        <div class="s-jp serif anim d3" style="font-size:38px;margin-top:18px;letter-spacing:0.16em;">楽曲解析とBPM同期</div>
+        <div class="lead anim d4" style="font-size:21px;margin-top:26px;max-width:680px;">音と映像を<span class="neon">“数学的に”</span>同期させる。<br>感覚ではなく論理で、気持ちよさを設計する。</div>
+        <div class="chips anim d5" style="margin-top:34px;">
+          <span class="chip on">AFTER EFFECTS</span>
+          <span class="chip gold">MARKER</span>
+          <span class="chip gold">AUDIO AMPLITUDE</span>
+        </div>
+      </div>
+      <div class="cover-r">
+        <img src="assets/eyes_crystal.jpg" alt="Deep Prism">
+        <div class="vscrim"></div>
+        <div class="corner tr"></div><div class="corner br"></div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>KINETIC STAGE</b><span class="dot"></span>VTUBER MUSIC VIDEO · AFTER EFFECTS</div>
+      <div class="cr">SESSION 02 / 06</div>
+    </footer>
+  </section>
+
+  <!-- 02 · GOALS -->
+  <section class="slide" data-label="Goals">
+    <div class="ghost-num">2</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">01</span><span class="bar"></span>TODAY'S GOALS</div>
+        <div class="row"><div><h2 class="s-title">今日のゴール</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">感覚ではなく“論理”で音同期を作る</div></div></div>
+      </div>
+      <div class="cols c2-wide-l" style="align-items:center;">
+        <ul class="blist anim d2">
+          <li>楽曲の<b>BPMを正確に</b>求められる</li>
+          <li><b>1拍・1小節のフレーム数</b>を計算できる</li>
+          <li>AEで<b>マーカー</b>を正確に打てる</li>
+          <li>歌詞のタイミングをマーカーに配置できる</li>
+          <li><b class="hot">音に反応するアニメーション</b>を作れる</li>
+        </ul>
+        <div class="quote anim d3">
+          <div class="qe">“Math, not vibes.”</div>
+          <div class="qj">気持ちよさは、数字で設計できる。</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 02 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 03 · WHAT IS BPM -->
+  <section class="slide" data-label="What is BPM">
+    <div class="ghost-num">2</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">02</span><span class="bar"></span>WHAT IS BPM</div>
+        <div class="row"><div><h2 class="s-title">BPMとは何か</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">Beats Per Minute — 1分間の拍数</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="stack anim d2">
+          <div class="lead">BPMが分かると、映像のリズム設計が<span class="neon">すべて決まる</span>。<br>MVのタイミングは、つねにBPMが基準になる。</div>
+          <div class="note">基準が1つあるだけで、<b>全カットのテンポ</b>が揃う。</div>
+        </div>
+        <div class="grid2 anim d3" style="gap:22px;">
+          <div class="card hl"><div class="k"><span class="n">♪</span>1拍の長さ</div><div class="d">最小のリズム単位</div></div>
+          <div class="card"><div class="k"><span class="n">𝄞</span>1小節の長さ</div><div class="d">4拍 ＝ 構成の単位</div></div>
+          <div class="card" style="grid-column:1/-1;"><div class="k"><span class="n">▤</span>映像のリズム設計</div><div class="d">カット割り・動き・歌詞、すべてのテンポの土台になる</div></div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 02 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 04 · FORMULA -->
+  <section class="slide" data-label="BPM Formula">
+    <div class="ghost-num">2</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">03</span><span class="bar"></span>BPM → FRAMES</div>
+        <div class="row"><div><h2 class="s-title">フレーム計算式</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">“1拍＝何フレームか”を理解することが最重要</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="readout anim d2">
+          <div class="rr"><span class="rk">例 / Example BPM</span><span class="rv big">120</span></div>
+          <div class="rr"><span class="rk">1拍の秒数 — 60 ÷ 120</span><span class="rv">0.5 <span style="font-size:18px;color:var(--lavender);">sec</span></span></div>
+          <div class="rr"><span class="rk">1拍のフレーム — 0.5 × 29.97fps</span><span class="rv live">≒ 15 <span style="font-size:18px;">f</span></span></div>
+          <div class="rr"><span class="rk">1小節 — 4拍</span><span class="rv live">≒ 60 <span style="font-size:18px;">f</span></span></div>
+        </div>
+        <div class="stack anim d3" style="gap:24px;">
+          <div class="card hl">
+            <div class="k">本曲 — Deep Prism</div>
+            <div style="display:flex;align-items:baseline;gap:18px;margin-top:6px;">
+              <span class="neon" style="font-family:var(--mono);font-size:64px;font-weight:600;">128</span>
+              <span style="font-family:var(--jp);font-size:18px;color:rgba(248,239,255,0.7);">BPM → 1拍 ≒ <b class="neon">14f</b> / 1小節 ≒ <b class="neon">56f</b></span>
+            </div>
+          </div>
+          <div class="note"><b>fps</b> を必ず確認 — 29.97 と 30 でズレが生まれる。</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 02 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 05 · MARKERS -->
+  <section class="slide" data-label="Markers">
+    <div class="ghost-num">2</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">04</span><span class="bar"></span>MARKERS IN AE</div>
+        <div class="row"><div><h2 class="s-title">AEでのマーカー打ち</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">正確なマーカーは、MV制作の“命”</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <ul class="blist anim d2">
+          <li>拍ごとに<b>マーカー</b>を打つ</li>
+          <li>小節ごとに<b>色分け</b>する</li>
+          <li><b class="hot">歌詞の開始位置</b>にマーカー</li>
+          <li>マーカー精度が高いほど、後の作業が速い</li>
+        </ul>
+        <div class="stack anim d3">
+          <div class="card">
+            <div class="k">命名規則の例 — NAMING</div>
+            <div class="chips" style="margin-top:8px;">
+              <span class="chip gold">A1_beat1</span>
+              <span class="chip gold">SABI_beat4</span>
+              <span class="chip gold">LYRIC_01</span>
+            </div>
+            <div class="d" style="margin-top:14px;">統一した命名は、スクリプトやエクスプレッションとの互換性も生む。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 02 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 06 · LYRIC TIMING -->
+  <section class="slide" data-label="Lyric Timing">
+    <div class="ghost-num">2</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">05</span><span class="bar"></span>READING THE WAVEFORM</div>
+        <div class="row"><div><h2 class="s-title">歌詞タイミングの取り方</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">歌詞のタイミングは“視認性”に直結する</div></div></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:36px;">
+        <div class="wave anim d2" id="wave2"></div>
+        <div class="grid4 anim d3" style="grid-template-columns:repeat(4,1fr);gap:22px;">
+          <div class="card" style="padding:20px 24px;"><div class="k"><span class="n">1</span>子音</div><div class="d">立ち上がりでマーカー</div></div>
+          <div class="card" style="padding:20px 24px;"><div class="k"><span class="n">2</span>母音</div><div class="d">伸びは後で調整</div></div>
+          <div class="card" style="padding:20px 24px;"><div class="k"><span class="n">3</span>区切り</div><div class="d">意味の切れ目を意識</div></div>
+          <div class="card hl" style="padding:20px 24px;"><div class="k"><span class="n">4</span>サビ</div><div class="d">ズレが目立つ。慎重に</div></div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 02 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 07 · AUDIO AMPLITUDE -->
+  <section class="slide" data-label="Audio Amplitude">
+    <div class="ghost-num">2</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">06</span><span class="bar"></span>AUDIO → KEYFRAMES</div>
+        <div class="row"><div><h2 class="s-title">音反応の基礎</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">オーディオ振幅 — 音を“数値化”する</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="steps anim d2">
+          <div class="st"><div class="sn">01</div><div class="sb"><div class="stt">オーディオをキーフレームに変換</div><div class="sd">楽曲レイヤーを右クリック → キーフレーム化</div></div></div>
+          <div class="st"><div class="sn">02</div><div class="sb"><div class="stt">Both Channels の値を使用</div><div class="sd">左右まとめた振幅をソースにする</div></div></div>
+          <div class="st"><div class="sn">03</div><div class="sb"><div class="stt">パラメータに連動させる</div><div class="sd">スケール／ブラー／光量へリンク</div></div></div>
+        </div>
+        <div class="quote anim d3">
+          <div class="qe">“Sound becomes force.”</div>
+          <div class="qj">音の強さが、そのまま映像の強さになる。</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 02 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 08 · VISUALIZE SOUND -->
+  <section class="slide" data-label="Visualize Sound">
+    <div class="ghost-num">2</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">07</span><span class="bar"></span>VISUALIZE THE SOUND</div>
+        <div class="row"><div><h2 class="s-title">音を視覚化する</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">音の役割を理解して、動きに変換する</div></div></div>
+      </div>
+      <div class="grid3 anim d2" style="flex:1;align-content:center;gap:30px;">
+        <div class="card hl"><div class="k">KICK — 低音</div><div class="t" style="font-size:30px;">揺れ</div><div class="d">画面全体のシェイク・バウンスへ</div></div>
+        <div class="card"><div class="k">SNARE — 中音</div><div class="t" style="font-size:30px;">光</div><div class="d">グロー・フラッシュの明滅へ</div></div>
+        <div class="card"><div class="k">HI-HAT — 高音</div><div class="t" style="font-size:30px;">細かい動き</div><div class="d">パーティクル・微振動へ</div></div>
+      </div>
+      <div class="note anim d3" style="margin-top:6px;">音域ごとに役割を割り当てると、画面が<b class="neon">音楽的</b>になる。</div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 02 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 09 · DEMO -->
+  <section class="slide" data-label="Demo">
+    <div class="divwrap">
+      <div class="di"><img src="assets/stage_sing.jpg" alt="" style="object-position:50% 40%;"></div>
+      <div class="scrim"></div>
+    </div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad" style="justify-content:center;">
+      <div class="eyebrow anim" style="margin-bottom:22px;"><span class="ix">08</span><span class="bar"></span>LIVE DEMO</div>
+      <h2 class="s-title grad anim d1" style="font-size:74px;margin-bottom:14px;">実演：音同期モーション</h2>
+      <div class="s-jp serif anim d2" style="font-size:24px;color:rgba(248,239,255,0.8);margin-bottom:34px;">音と映像が一致すると、“気持ちよさ”が生まれる</div>
+      <div class="chips anim d3" style="gap:14px;">
+        <span class="chip on">SCALE ← 音</span>
+        <span class="chip gold">BLUR ← 音</span>
+        <span class="chip gold">GLOW ← 音</span>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 02 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 10 · WORKSHOP -->
+  <section class="slide" data-label="Workshop">
+    <div class="ghost-num">2</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">09</span><span class="bar"></span>WORKSHOP · 20 MIN</div>
+        <div class="row"><div><h2 class="s-title">ワーク：8小節同期演出</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">音と映像の“気持ちよさ”を体で覚える</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="checks empty anim d2">
+          <div class="ci"><span class="cd"></span><span>8小節分の<b>マーカー</b></span></div>
+          <div class="ci"><span class="cd"></span><span>歌詞のタイミング配置</span></div>
+          <div class="ci"><span class="cd"></span><span><b class="hot">音反応アニメーション</b>を1つ</span></div>
+          <div class="ci"><span class="cd"></span><span>シェイプ or テキストを動かす</span></div>
+        </div>
+        <div class="card anim d3">
+          <div class="k">講評ポイント — REVIEW</div>
+          <ul class="blist" style="margin-top:12px;gap:14px;">
+            <li style="font-size:21px;">マーカーの<b>精度</b></li>
+            <li style="font-size:21px;">音と動きの<b>一致</b></li>
+            <li style="font-size:21px;">動きの<b>強弱</b>（ダイナミクス）</li>
+            <li style="font-size:21px;">歌詞の<b class="hot">視認性</b></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 02 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 11 · HOMEWORK -->
+  <section class="slide" data-label="Homework">
+    <div class="divwrap">
+      <div class="di"><img src="assets/eyes_closeup.jpg" alt="" style="object-position:50% 30%;"></div>
+      <div class="scrim"></div>
+    </div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad" style="justify-content:center;">
+      <div class="eyebrow anim" style="margin-bottom:22px;"><span class="ix">10</span><span class="bar"></span>HOMEWORK → NEXT</div>
+      <h2 class="s-title grad anim d1" style="font-size:80px;margin-bottom:34px;">宿題</h2>
+      <div class="checks empty anim d2" style="max-width:780px;">
+        <div class="ci"><span class="cd"></span><span>全曲<b>マーカー入り</b>コンポ</span></div>
+        <div class="ci"><span class="cd"></span><span>歌詞タイミングをすべて配置</span></div>
+        <div class="ci"><span class="cd"></span><span><b class="neon">30秒の音同期モーション</b>（任意の演出）</span></div>
+      </div>
+      <div class="note anim d3" style="margin-top:42px;font-size:26px;">NEXT — SESSION 03 <b>Vコンテ制作（構図・カメラ・レイアウト）</b></div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 02 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+</deck-stage>
+<script>
+(function(){
+  var w=document.getElementById('wave2'); if(!w) return;
+  var html='';
+  for(var i=0;i<120;i++){
+    if(i===36||i===74){ html+='<span class="mk"></span>'; }
+    else if(i===104){ html+='<span class="mk hot"></span>'; }
+    var h=14+Math.abs(Math.sin(i*0.4)*Math.cos(i*0.13))*100;
+    html+='<i style="height:'+h+'%"></i>';
+  }
+  w.innerHTML=html;
+})();
+</script>
+<script src="deck-stage.js"></script>
+<script src="deck-init.js"></script>
+</body>
+</html>

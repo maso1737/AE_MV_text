@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第5回 コンポジット撮影効果 — Deep Prism MV Workshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,700;0,900;1,700;1,900&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700;800&family=Noto+Serif+JP:wght@400;600;800&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="deck.css">
+<style>
+  .cover-grid{position:absolute;inset:0;display:grid;grid-template-columns:1.15fr 0.85fr;z-index:2;}
+  .cover-l{padding:118px 0 118px 132px;display:flex;flex-direction:column;justify-content:center;}
+  .cover-r{position:relative;overflow:hidden;background:#05030d;}
+  .cover-r img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;}
+  .cover-r .vscrim{position:absolute;inset:0;background:linear-gradient(90deg,#07030f 0%,rgba(7,3,15,0.3) 30%,transparent 62%);}
+  .cover-sess{font-family:var(--orn);font-style:italic;font-weight:700;font-size:300px;line-height:0.8;letter-spacing:-0.04em;
+    color:transparent;background:var(--grad-spot);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 40px rgba(255,79,168,0.3));}
+  /* chromatic aberration title sample */
+  .castage{position:relative;height:300px;border:1px solid rgba(255,210,122,0.25);border-radius:6px;overflow:hidden;
+    background:radial-gradient(ellipse at center,rgba(184,80,255,0.16),rgba(7,3,15,0.9));display:flex;align-items:center;justify-content:center;}
+  .ca-word{position:relative;font-family:var(--disp);font-style:italic;font-weight:900;font-size:120px;letter-spacing:0.02em;}
+  .ca-word .l{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+  .ca-word .l.r{color:#FF2D6F;transform:translateX(-5px);mix-blend-mode:screen;}
+  .ca-word .l.b{color:#5AE9FF;transform:translateX(5px);mix-blend-mode:screen;}
+  .ca-word .l.w{color:#fff;}
+  .ca-vig{position:absolute;inset:0;box-shadow:inset 0 0 120px 30px rgba(7,3,15,0.85);pointer-events:none;}
+  /* wiggle formula */
+  .wig{font-family:var(--mono);font-size:38px;letter-spacing:0.04em;color:var(--ice);text-shadow:0 0 16px rgba(90,233,255,0.5);text-align:center;}
+  .wig b{color:var(--gold);font-weight:600;}
+  /* kinetic typo sample row */
+  .ktrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+  .ktrow .kt{font-family:var(--jp);font-weight:800;font-size:30px;color:#fff;}
+  .ktrow .kt.f1{opacity:0.35;}
+  .ktrow .kt.f2{opacity:0.7;letter-spacing:0.1em;}
+  .ktrow .kt.f3{opacity:1;letter-spacing:0.24em;color:var(--gold);text-shadow:0 0 18px rgba(255,210,122,0.5);}
+</style>
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+
+  <!-- 01 · COVER -->
+  <section class="slide" data-label="Cover">
+    <div class="cover-grid">
+      <div class="cover-l">
+        <div class="eyebrow anim" style="margin-bottom:30px;">幽ヶ崎 海月 · DEEP PRISM<span class="bar"></span>AE LYRIC MV WORKSHOP</div>
+        <div class="cover-sess anim d1">05</div>
+        <h1 class="s-title grad anim d2" style="font-size:88px;margin-top:6px;">CINEMATIC<br>COMPOSITE</h1>
+        <div class="s-jp serif anim d3" style="font-size:36px;margin-top:18px;letter-spacing:0.12em;">コンポジット撮影効果 — MVらしさの付与</div>
+        <div class="lead anim d4" style="font-size:21px;margin-top:26px;max-width:680px;">映像に<span class="neon">“撮影された質感”</span>を与える。<br>光・揺れ・色のズレで、CGっぽさを消し作品に昇華する。</div>
+        <div class="chips anim d5" style="margin-top:34px;">
+          <span class="chip on">GLOW</span>
+          <span class="chip gold">CHROMATIC</span>
+          <span class="chip gold">WIGGLE · TYPO</span>
+        </div>
+      </div>
+      <div class="cover-r">
+        <img src="assets/eyes_closeup.jpg" alt="Deep Prism close up">
+        <div class="vscrim"></div>
+        <div class="corner tr"></div><div class="corner br"></div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>KINETIC STAGE</b><span class="dot"></span>VTUBER MUSIC VIDEO · AFTER EFFECTS</div>
+      <div class="cr">SESSION 05 / 06</div>
+    </footer>
+  </section>
+
+  <!-- 02 · GOALS -->
+  <section class="slide" data-label="Goals">
+    <div class="ghost-num">5</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">01</span><span class="bar"></span>TODAY'S GOALS</div>
+        <div class="row"><div><h2 class="s-title">今日のゴール</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">Vコンテを“作品レベル”に引き上げる</div></div></div>
+      </div>
+      <div class="cols c2-wide-l" style="align-items:center;">
+        <ul class="blist anim d2">
+          <li>MVらしい<b>光・揺れ・質感</b>を作れる</li>
+          <li><b>グロー・ブラー・色収差</b>を適切に使える</li>
+          <li>カメラシェイクを<b>音と連動</b>させられる</li>
+          <li>歌詞の<b class="hot">キネティックタイポ</b>を作れる</li>
+        </ul>
+        <div class="quote anim d3">
+          <div class="qe">“Make it shot, not rendered.”</div>
+          <div class="qj">CGっぽさを消し、撮ったように見せる。</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 05 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 03 · WHAT IS CINEMATIC -->
+  <section class="slide" data-label="The Look">
+    <div class="ghost-num">5</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">02</span><span class="bar"></span>THE "SHOT" LOOK</div>
+        <div class="row"><div><h2 class="s-title">MVの“撮影感”とは</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">これらが入ると“CGっぽさ”が消える</div></div></div>
+      </div>
+      <div class="grid3 anim d2" style="grid-template-columns:repeat(5,1fr);flex:1;align-content:center;gap:18px;">
+        <div class="card" style="padding:24px 20px;"><div class="k"><span class="n">✦</span></div><div class="t" style="font-size:22px;">光のにじみ</div><div class="d">GLOW</div></div>
+        <div class="card" style="padding:24px 20px;"><div class="k"><span class="n">◎</span></div><div class="t" style="font-size:22px;">レンズの揺れ</div><div class="d">SHAKE</div></div>
+        <div class="card hl" style="padding:24px 20px;"><div class="k"><span class="n">⬓</span></div><div class="t" style="font-size:22px;">色のズレ</div><div class="d">CHROMATIC</div></div>
+        <div class="card" style="padding:24px 20px;"><div class="k"><span class="n">❋</span></div><div class="t" style="font-size:22px;">ピントの浅さ</div><div class="d">DOF</div></div>
+        <div class="card" style="padding:24px 20px;"><div class="k"><span class="n">▒</span></div><div class="t" style="font-size:22px;">ノイズ</div><div class="d">GRAIN</div></div>
+      </div>
+      <div class="note anim d3" style="margin-top:6px;">5つの“質感”が、画面をMVに変える。</div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 05 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 04 · GLOW & BLUR -->
+  <section class="slide" data-label="Glow & Blur">
+    <div class="ghost-num">5</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">03</span><span class="bar"></span>GLOW &amp; BLUR</div>
+        <div class="row"><div><h2 class="s-title">グローとブラー</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">光は“盛り上がりのスイッチ”、ブラーは“動きの気持ちよさ”</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:stretch;">
+        <div class="card anim d2">
+          <div class="k">✦ GLOW — 光のにじみ</div>
+          <ul class="blist" style="margin-top:14px;gap:14px;">
+            <li style="font-size:21px;">明るい部分を<b>強調</b></li>
+            <li style="font-size:21px;">サビの盛り上がりに合わせる</li>
+            <li style="font-size:21px;">色を統一すると<b>世界観が安定</b></li>
+          </ul>
+          <div class="note" style="margin-top:18px;font-size:20px;">過剰にすると<b class="hot">“安っぽく”</b>なる。</div>
+        </div>
+        <div class="card anim d3">
+          <div class="k">◐ BLUR — スピード感</div>
+          <ul class="blist" style="margin-top:14px;gap:14px;">
+            <li style="font-size:21px;">速い動き → ブラーを<b>強める</b></li>
+            <li style="font-size:21px;">止まる瞬間 → ブラーを<b>弱める</b></li>
+            <li style="font-size:21px;">音の強弱に合わせて変化</li>
+          </ul>
+          <div class="note" style="margin-top:18px;font-size:20px;">強弱が<b class="neon">気持ちよさ</b>を生む。</div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 05 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 05 · CHROMATIC -->
+  <section class="slide" data-label="Chromatic">
+    <div class="ghost-num">5</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">04</span><span class="bar"></span>CHROMATIC ABERRATION</div>
+        <div class="row"><div><h2 class="s-title">色収差 — レンズの味</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">RGBをわずかにズラし“レンズ感”を作る</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="castage anim d2">
+          <div class="ca-word">
+            <span class="l r">PRISM</span><span class="l b">PRISM</span><span class="l w">PRISM</span>
+          </div>
+          <div class="ca-vig"></div>
+        </div>
+        <div class="stack anim d3" style="gap:18px;">
+          <ul class="blist">
+            <li>画面端に<b>少しだけ</b>入れる</li>
+            <li>サビのインパクトに合わせる</li>
+          </ul>
+          <div class="card hl"><div class="k">⚠ 注意</div><div class="d" style="font-size:20px;">強すぎると<b style="color:var(--rouge);">“ホラー”</b>になる。あくまで“味”として。</div></div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 05 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 06 · WIGGLE -->
+  <section class="slide" data-label="Wiggle">
+    <div class="ghost-num">5</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">05</span><span class="bar"></span>CAMERA SHAKE · WIGGLE</div>
+        <div class="row"><div><h2 class="s-title">カメラシェイク</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">手持ちカメラの揺れ — シェイクは“臨場感”を作る</div></div></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:40px;">
+        <div class="readout anim d2" style="align-items:center;padding:44px;">
+          <div class="wig">wiggle( <b>周波数</b> , <b>振幅</b> )</div>
+        </div>
+        <div class="grid3 anim d3" style="gap:26px;">
+          <div class="card"><div class="k"><span class="n">1</span>スライダーで制御</div><div class="d">強弱をパラメータ化</div></div>
+          <div class="card hl"><div class="k"><span class="n">2</span>サビで強く</div><div class="d">盛り上がりに迫力を</div></div>
+          <div class="card"><div class="k"><span class="n">3</span>Aメロで弱く</div><div class="d">静けさを保つ</div></div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 05 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 07 · AUDIO-LINKED SHAKE -->
+  <section class="slide" data-label="Audio Shake">
+    <div class="ghost-num">5</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">06</span><span class="bar"></span>AUDIO-LINKED SHAKE</div>
+        <div class="row"><div><h2 class="s-title">音と連動するシェイク</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">音が映像を動かす — 一致が“気持ちよさ”を生む</div></div></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:46px;">
+        <div class="flow anim d2" style="max-width:1100px;margin:0 auto;">
+          <div class="fn on"><div class="fnum">1</div><div class="fdot">♪</div><div class="ft">オーディオ振幅</div><div class="fe">AMPLITUDE</div></div>
+          <div class="fn on"><div class="fnum">2</div><div class="fdot">⊟</div><div class="ft">スライダーに接続</div><div class="fe">LINK</div></div>
+          <div class="fn on"><div class="fnum">3</div><div class="fdot">◎</div><div class="ft">シェイクの強さ</div><div class="fe">SHAKE</div></div>
+          <div class="fn on"><div class="fnum">4</div><div class="fdot">✦</div><div class="ft">キックで揺れる</div><div class="fe">IMPACT</div></div>
+        </div>
+        <div class="note anim d3" style="justify-content:center;font-size:25px;">キックで揺れる → <b class="neon">MVらしい迫力</b>。</div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 05 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 08 · KINETIC TYPO -->
+  <section class="slide" data-label="Kinetic Typo">
+    <div class="ghost-num">5</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">07</span><span class="bar"></span>KINETIC TYPOGRAPHY</div>
+        <div class="row"><div><h2 class="s-title">歌詞のキネティックタイポ</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">歌詞は“読ませる”のではなく“感じさせる”</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="grid3 anim d2" style="gap:22px;">
+          <div class="card"><div class="k"><span class="n">1</span>不透明度</div><div class="d">フェードイン</div></div>
+          <div class="card hl"><div class="k"><span class="n">2</span>トラッキング</div><div class="d">文字間の広がり</div></div>
+          <div class="card"><div class="k"><span class="n">3</span>位置</div><div class="d">上下の動き</div></div>
+        </div>
+        <div class="stack anim d3" style="gap:24px;">
+          <div class="readout" style="gap:18px;">
+            <div class="ktrow"><span class="kt f1">海の底で</span><span class="kt f2">海の底で</span><span class="kt f3">海の底で</span></div>
+            <div class="kick" style="margin-top:4px;">FADE → TRACK → ACCENT（音のアクセントに合わせる）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 05 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 09 · DEMO -->
+  <section class="slide" data-label="Demo">
+    <div class="divwrap">
+      <div class="di"><img src="assets/eyes_crystal.jpg" alt="" style="object-position:50% 35%;"></div>
+      <div class="scrim"></div>
+    </div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad" style="justify-content:center;">
+      <div class="eyebrow anim" style="margin-bottom:22px;"><span class="ix">08</span><span class="bar"></span>LIVE DEMO · 30 SEC</div>
+      <h2 class="s-title grad anim d1" style="font-size:70px;margin-bottom:14px;">実演：撮影効果の追加</h2>
+      <div class="s-jp serif anim d2" style="font-size:24px;color:rgba(248,239,255,0.82);margin-bottom:34px;">Vコンテが“MVの画面”に変わる瞬間</div>
+      <div class="chips anim d3" style="gap:14px;">
+        <span class="chip on">グローをサビに</span>
+        <span class="chip gold">色収差を画面端</span>
+        <span class="chip gold">シェイクを音連動</span>
+        <span class="chip gold">歌詞を音に合わせ</span>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 05 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 10 · WORKSHOP -->
+  <section class="slide" data-label="Workshop">
+    <div class="ghost-num">5</div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad">
+      <div class="head anim">
+        <div class="eyebrow"><span class="ix">09</span><span class="bar"></span>WORKSHOP · 30 MIN</div>
+        <div class="row"><div><h2 class="s-title">ワーク：撮影効果入りVコンテ</h2><div class="s-jp" style="margin-top:8px;color:rgba(181,142,255,0.8);">画面に“MVらしさ”を与える</div></div></div>
+      </div>
+      <div class="cols c2" style="align-items:center;">
+        <div class="checks empty anim d2">
+          <div class="ci"><span class="cd"></span><span>30秒のVコンテに<b>撮影効果</b>を追加</span></div>
+          <div class="ci"><span class="cd"></span><span>グロー・ブラー・色収差の<b>いずれか</b></span></div>
+          <div class="ci"><span class="cd"></span><span>カメラシェイク<b class="hot">1つ以上</b></span></div>
+          <div class="ci"><span class="cd"></span><span>歌詞のキネティックタイポ</span></div>
+        </div>
+        <div class="card anim d3">
+          <div class="k">講評ポイント — REVIEW</div>
+          <ul class="blist" style="margin-top:12px;gap:13px;">
+            <li style="font-size:20px;">撮影効果の<b>“適量”</b></li>
+            <li style="font-size:20px;">世界観との整合性</li>
+            <li style="font-size:20px;">音との同期</li>
+            <li style="font-size:20px;">歌詞の視認性</li>
+            <li style="font-size:20px;"><b class="hot">過剰演出</b>になっていないか</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 05 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+  <!-- 11 · HOMEWORK -->
+  <section class="slide" data-label="Homework">
+    <div class="divwrap">
+      <div class="di"><img src="assets/stage_sing.jpg" alt="" style="object-position:50% 30%;"></div>
+      <div class="scrim"></div>
+    </div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="pad" style="justify-content:center;">
+      <div class="eyebrow anim" style="margin-bottom:22px;"><span class="ix">10</span><span class="bar"></span>HOMEWORK → NEXT</div>
+      <h2 class="s-title grad anim d1" style="font-size:80px;margin-bottom:34px;">宿題</h2>
+      <div class="checks empty anim d2" style="max-width:860px;">
+        <div class="ci"><span class="cd"></span><span>全曲に<b>撮影効果を適用</b>したVコンテ</span></div>
+        <div class="ci"><span class="cd"></span><span>カメラシェイクを<b class="neon">音と連動</b>させる</span></div>
+        <div class="ci"><span class="cd"></span><span>歌詞のキネティックタイポを<b>全セクション</b>に追加</span></div>
+      </div>
+      <div class="note anim d3" style="margin-top:42px;font-size:26px;">NEXT — SESSION 06 <b>最終仕上げと書き出し（YouTube最適化）</b></div>
+    </div>
+    <footer class="chrome">
+      <div class="cl"><b>DEEP PRISM</b><span class="dot"></span>幽ヶ崎 海月 · AE LYRIC MV</div>
+      <div class="cr">SESSION 05 — <span class="fc-cur"></span> / <span class="fc-tot"></span></div>
+    </footer>
+  </section>
+
+</deck-stage>
+<script src="deck-stage.js"></script>
+<script src="deck-init.js"></script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,900;1,900&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700;800;900&family=Noto+Serif+JP:wght@400;600;800&family=Cormorant+Garamond:ital,wght@1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_ds/kinetic-stage-design-system-bfe4c6e7-5846-4ac3-abfb-b4c3c57ee77d/colors_and_type.css">
+<link rel="stylesheet" href="_ds/kinetic-stage-design-system-bfe4c6e7-5846-4ac3-abfb-b4c3c57ee77d/stage-system.css">
+<script src="_ds/kinetic-stage-design-system-bfe4c6e7-5846-4ac3-abfb-b4c3c57ee77d/_ds_bundle.js"></script>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#07030f;overflow:hidden}
+  @keyframes kfTw{0%,100%{opacity:.5}50%{opacity:.95}}
+  input[type=range]{accent-color:#FF4FA8;cursor:pointer}
+</style>
+</helmet>
+<div onMouseMove="{{ onMove }}" style="position:fixed;inset:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans JP',sans-serif;background:radial-gradient(ellipse 82% 58% at 86% -10%,rgba(184,80,255,0.28),transparent 60%),radial-gradient(ellipse 62% 55% at -8% 14%,rgba(90,233,255,0.14),transparent 62%),radial-gradient(ellipse 70% 55% at 50% 114%,rgba(255,79,168,0.12),transparent 65%),linear-gradient(180deg,#160c30 0%,#0c0622 55%,#07030f 100%)">
+
+  <div style="position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(181,142,255,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(181,142,255,0.035) 1px,transparent 1px);background-size:66px 66px"></div>
+  <div style="position:fixed;inset:0;pointer-events:none;z-index:0;mix-blend-mode:screen;opacity:0.8;animation:kfTw 5s ease-in-out infinite;background-image:radial-gradient(1.5px 1.5px at 22px 34px,rgba(255,255,255,0.8),transparent 60%),radial-gradient(1px 1px at 120px 90px,rgba(90,233,255,0.8),transparent 60%),radial-gradient(1.5px 1.5px at 200px 160px,rgba(181,142,255,0.8),transparent 60%),radial-gradient(1px 1px at 280px 50px,rgba(255,210,122,0.7),transparent 60%),radial-gradient(1.5px 1.5px at 330px 210px,rgba(255,122,194,0.7),transparent 60%);background-size:380px 260px"></div>
+
+  <div ref="{{ stageRef }}" style="width:1920px;height:1080px;position:relative;flex:none;transform-origin:center center;z-index:1">
+    {{ scene }}
+  </div>
+
+  <div style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:99;display:flex;align-items:center;gap:14px;padding:9px 16px;border-radius:8px;background:rgba(16,7,40,0.72);backdrop-filter:blur(8px);border:1px solid rgba(255,210,122,0.22)">
+    <button onClick="{{ onToggle }}" style="width:34px;height:30px;border:1px solid rgba(255,79,168,0.5);border-radius:5px;background:rgba(255,79,168,0.12);color:#F8EFFF;font-size:13px;cursor:pointer;line-height:1">{{ playLabel }}</button>
+    <input type="range" min="0" max="46" step="0.01" value="{{ t }}" onInput="{{ onSeek }}" style="width:360px">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.18em;color:#FFD27A;min-width:96px;text-align:right">{{ timeLabel }}</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { t: 0, playing: true };
+  px = 0; py = 0; tpx = 0; tpy = 0;   // parallax: current + target pointer (-1..1)
+  DUR = 46;
+  spb = 0.46875;            // 128 BPM
+  GRAD = 'linear-gradient(118deg,#FFE9B0,#FFD27A 24%,#FF4FA8 60%,#B58EFF 100%)';
+  ACC = ['#FF4FA8','#FFD27A','#5AE9FF','#B58EFF','#B850FF','#FF7AC2','#9CFF7A'];
+  scaleRef = React.createRef();
+
+  h = (tag, style, kids, extra) =>
+    React.createElement(tag, Object.assign({ style }, extra || {}),
+      ...(kids == null ? [] : Array.isArray(kids) ? kids : [kids]));
+
+  // ── math ──
+  clamp01(x){ return Math.max(0, Math.min(1, x)); }
+  seg(t,a,b){ return this.clamp01((b-a) ? (t-a)/(b-a) : 1); }
+  mix(p,a,b){ return a+(b-a)*p; }
+  eOut(p){ return 1-Math.pow(1-p,3); }
+  eInOut(p){ return p<.5 ? 4*p*p*p : 1-Math.pow(-2*p+2,3)/2; }
+  eBack(p){ const c1=2.0, c3=c1+1; return 1+c3*Math.pow(p-1,3)+c1*Math.pow(p-1,2); }
+  grad(extra){ return Object.assign({ background:this.GRAD, WebkitBackgroundClip:'text', backgroundClip:'text', WebkitTextFillColor:'transparent', color:'transparent' }, extra||{}); }
+  jpScale(ch){
+    if(ch===' '||ch==='\u00A0') return 1;
+    if(/[、。，．・…！？「」『』（）：；]/.test(ch)) return 0.5;
+    if(/[ぁ-ゟ]/.test(ch)) return 0.64;
+    if(/[ァ-ヿ]/.test(ch)) return 0.84;
+    if(/[一-龯々〆〤]/.test(ch)) return 1.1;
+    if(/[A-Za-z0-9]/.test(ch)) return 0.78;
+    return 1;
+  }
+  beatEnv(t){ const ph=(t % this.spb)/this.spb; return Math.pow(1-ph,3.5); }
+  downEnv(t){ const bar=this.spb*4; const ph=(t%bar)/bar; return Math.pow(1-ph,5); }
+  shake(t,amp){ if(!amp) return {x:0,y:0}; const e=this.beatEnv(t); return { x:Math.sin(t*84)*amp*e, y:Math.cos(t*71)*amp*e }; }
+  tc(t){ const f=Math.floor((t%1)*30), s=Math.floor(t)%60, m=Math.floor(t/60); const p=n=>String(n).padStart(2,'0'); return p(m)+':'+p(s)+':'+p(f); }
+
+  // ── lifecycle ──
+  componentDidMount(){
+    try{ const s=localStorage.getItem('lyricmv_t'); if(s!=null) this.setState({ t:parseFloat(s)||0 }); }catch(e){}
+    this.fit();
+    this._onR=()=>this.fit(); window.addEventListener('resize', this._onR);
+    this._last=performance.now(); this._raf=requestAnimationFrame(this.loop);
+  }
+  componentWillUnmount(){ cancelAnimationFrame(this._raf); window.removeEventListener('resize', this._onR); }
+  fit=()=>{ const el=this.scaleRef.current; if(!el) return; const s=Math.min(window.innerWidth/1920, window.innerHeight/1080); el.style.transform='scale('+s+')'; };
+  loop=(now)=>{
+    const dt=Math.min(0.05,(now-this._last)/1000); this._last=now;
+    const k=Math.min(1,dt*8); this.px+=(this.tpx-this.px)*k; this.py+=(this.tpy-this.py)*k;
+    if(this.state.playing){ let t=this.state.t+dt; if(t>=this.DUR) t-=this.DUR; this.setState({t}); this._save(t); }
+    else if(Math.abs(this.tpx-this.px)>0.0008||Math.abs(this.tpy-this.py)>0.0008){ this.forceUpdate(); }
+    this._raf=requestAnimationFrame(this.loop);
+  };
+  _save(t){ if(!this._lw||Math.abs(t-this._lw)>0.2){ try{ localStorage.setItem('lyricmv_t', t); }catch(e){} this._lw=t; } }
+  toggle=()=>this.setState(s=>({ playing:!s.playing }));
+  seek=(e)=>{ const v=parseFloat(e.target.value); this.setState({ playing:false, t:v }); this._save(v); };
+  move=(e)=>{ this.tpx=(e.clientX/window.innerWidth-0.5)*2; this.tpy=(e.clientY/window.innerHeight-0.5)*2; };
+  im(src,style){ return this.h('img', Object.assign({ display:'block', pointerEvents:'none', userSelect:'none' }, style), null, { src, draggable:false }); }
+
+  // ════════ MEDIA / PARALLAX DEPTH LAYERS (behind the type) ════════
+  mediaLayers(t){
+    const h=this.h, els=[];
+    const par=(dx,dy)=>`translate(${(this.px*dx).toFixed(1)}px,${(this.py*dy).toFixed(1)}px)`;
+
+    // EYE close-up — intro through verse B, slow Ken-Burns push-in
+    const eyeOp=this.seg(t,0.2,1.6)*(1-this.seg(t,16.4,18.4));
+    if(eyeOp>0.002){
+      const z=1.06+this.seg(t,0,18)*0.18;
+      els.push(h('div',{ position:'absolute', inset:'-7%', opacity:(eyeOp*0.6).toFixed(3), transform:par(14,10) },
+        this.im('media/eye.png',{ width:'100%', height:'100%', objectFit:'cover', transform:`scale(${z.toFixed(3)})`, filter:'saturate(1.05) brightness(0.74)' })));
+      els.push(h('div',{ position:'absolute', inset:0, opacity:eyeOp.toFixed(3), background:'radial-gradient(ellipse 72% 62% at 50% 48%,transparent,rgba(12,6,29,0.5) 100%),linear-gradient(180deg,rgba(12,6,29,0.32),rgba(12,6,29,0.52))' }));
+    }
+
+    // JELLYFISH ×2 — drift up through verse A/B, biggest parallax
+    const jOp=this.seg(t,6.0,7.6)*(1-this.seg(t,17.8,19.2));
+    if(jOp>0.002){
+      const j1y=300+Math.sin(t*0.7+1)*44-(t-6)*7;
+      els.push(h('div',{ position:'absolute', left:'1190px', top:j1y.toFixed(0)+'px', width:'300px', opacity:(jOp*0.92).toFixed(3), transform:par(46,34)+` rotate(${(Math.sin(t*0.4)*5).toFixed(1)}deg)`, filter:'drop-shadow(0 0 32px rgba(181,142,255,0.5))' },
+        this.im('media/jelly1.png',{ width:'100%' })));
+      const j2y=600+Math.sin(t*0.9)*48-(t-6)*5;
+      els.push(h('div',{ position:'absolute', left:'320px', top:j2y.toFixed(0)+'px', width:'150px', opacity:(jOp*0.95).toFixed(3), transform:par(64,48)+` rotate(${(Math.sin(t*0.5+1)*-6).toFixed(1)}deg)`, filter:'drop-shadow(0 0 22px rgba(255,79,168,0.42))' },
+        this.im('media/jelly2.png',{ width:'100%' })));
+    }
+
+    // STAGE — chorus only, push-in + tiny beat zoom
+    const stOp=this.seg(t,24.8,25.6)*(1-this.seg(t,37.6,38.6));
+    if(stOp>0.002){
+      const z=1.05+this.seg(t,24.8,38)*0.12+this.beatEnv(t)*0.012;
+      els.push(h('div',{ position:'absolute', inset:'-6%', opacity:(stOp*0.72).toFixed(3), transform:par(10,7) },
+        this.im('media/stage.png',{ width:'100%', height:'100%', objectFit:'cover', transform:`scale(${z.toFixed(3)})`, filter:'saturate(1.1) brightness(0.92)' })));
+      els.push(h('div',{ position:'absolute', inset:0, opacity:stOp.toFixed(3), background:'linear-gradient(180deg,rgba(12,6,29,0.42),rgba(12,6,29,0.22) 50%,rgba(12,6,29,0.55))' }));
+    }
+
+    // CHARACTER (alpha) — slides in for the chorus finale, settles, fades into outro
+    const chOp=this.seg(t,33.6,34.4)*(1-this.seg(t,39.0,40.0));
+    if(chOp>0.002){
+      const si=this.eOut(this.seg(t,33.6,34.8));
+      els.push(h('div',{ position:'absolute', right:this.mix(si,-260,30).toFixed(0)+'px', bottom:'-60px', width:'880px', opacity:(chOp*0.92).toFixed(3), transform:par(30,20)+` translateY(${(Math.sin(t*0.8)*10).toFixed(1)}px)`, filter:'drop-shadow(0 0 44px rgba(184,80,255,0.55))' },
+        this.im('media/char.png',{ width:'100%' })));
+    }
+
+    return h('div',{ position:'absolute', inset:0, overflow:'hidden', pointerEvents:'none' }, els);
+  }
+
+  // ════════ TEXT-MOTION PRIMITIVES ════════
+  // per-character reveal w/ rise, blur, optional pop / float / scatter-in / exit
+  chars(text,t,start,o={}){
+    const h=this.h;
+    const stg=o.stagger??0.05, dur=o.dur??0.5, rise=o.rise??42, blur=o.blur??8;
+    const arr=Array.from(text);
+    const kids=arr.map((ch,i)=>{
+      const s=start+i*stg, pl=this.seg(t,s,s+dur), p=this.eOut(pl), pb=this.eBack(pl);
+      let op=p, ty=this.mix(p,rise,0), tx=0, bl=this.mix(p,blur,0), sc=o.pop?this.mix(pb,0.35,1):1, rot=0;
+      if(o.fromScatter){ const a=((i*53)%360)*Math.PI/180, d=1-p; tx+=Math.cos(a)*d*170; ty=this.mix(p,0,0)+Math.sin(a)*d*170; rot=d*(i%2?1:-1)*44; }
+      if(o.float){ ty += Math.sin(t*1.6+i*0.55)*o.float*p; }
+      if(o.exitAt!=null){
+        const es=o.exitAt+i*(o.exitStg??0.02), ep=this.seg(t,es,es+(o.exitDur??0.4));
+        if(ep>0){ op*=(1-ep); if(o.scatter){ const a=((i*53)%360)*Math.PI/180; tx+=Math.cos(a)*ep*150; ty+=Math.sin(a)*ep*150-ep*30; rot=(i%2?1:-1)*ep*54; bl+=ep*4; } else { ty-=ep*34; bl+=ep*7; } }
+      }
+      const col=o.colorFn?o.colorFn(i,ch):null;
+      const st=Object.assign({ display:'inline-block', whiteSpace:'pre', opacity:op, transform:`translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) scale(${sc.toFixed(3)}) rotate(${rot.toFixed(1)}deg)`, filter:bl>0.05?`blur(${bl.toFixed(2)}px)`:'none' }, o.style||{}, o.sizeFn?{ fontSize:o.sizeFn(ch).toFixed(3)+'em', verticalAlign:'baseline' }:{}, col?{ color:col, background:'none', WebkitTextFillColor:col }:{});
+      return h('span', st, ch===' '?'\u00A0':ch);
+    });
+    return h('span',{ display:'inline-block' }, kids);
+  }
+
+  // RGB-split chromatic-aberration word, beat-reactive + shake
+  chroma(text,t,start,o={}){
+    const h=this.h;
+    const rev=this.eOut(this.seg(t,start,start+(o.rev??0.5)));
+    const beat=this.beatEnv(t);
+    const amt=(o.base??5)+beat*(o.beatAmt??14);
+    const sh=this.shake(t,o.shake??0);
+    const sc=(o.scale??1)*(1+beat*(o.pulse??0));
+    const fs={ fontFamily:o.font??"'Noto Sans JP',sans-serif", fontWeight:o.weight??900, fontStyle:o.italic?'italic':'normal', fontSize:(o.size??150)+'px', letterSpacing:o.ls??'0.02em', lineHeight:1, whiteSpace:'nowrap' };
+    const layer=(color,ox)=>h('div', Object.assign({}, fs, { position:'absolute', left:0, top:0, color, WebkitTextFillColor:color, transform:`translateX(${ox.toFixed(1)}px)`, mixBlendMode:'screen', opacity:0.85 }), text);
+    const main=h('div', Object.assign({}, fs, { position:'relative' }, this.grad({ filter:`drop-shadow(0 0 ${(22+beat*30).toFixed(0)}px rgba(255,79,168,${(0.32+beat*0.32).toFixed(2)}))` })), text);
+    return h('div',{ position:'relative', display:'inline-block', opacity:rev, transform:`translate(${sh.x.toFixed(1)}px,${sh.y.toFixed(1)}px) scale(${(this.mix(rev,(o.from??0.7),1)*sc).toFixed(3)})` }, [ layer('rgba(255,36,120,0.95)',-amt), layer('rgba(70,226,255,0.95)',amt), main ]);
+  }
+
+  // giant outline kanji used as a depth layer behind the type
+  ghost(ch,t,o={}){
+    const h=this.h;
+    const dr=Math.sin(t*0.4+(o.ph||0))*(o.drift??18);
+    const pos={};
+    ['left','right','top','bottom'].forEach(k=>{ if(o[k]!=null) pos[k]=o[k]; });
+    const tr=(o.center?'translate(-50%,-50%) ':'')+`rotate(${o.rot??0}deg) translateY(${dr.toFixed(1)}px)`;
+    return h('div', Object.assign({ position:'absolute', fontFamily:o.serif?"'Noto Serif JP',serif":"'Noto Sans JP',sans-serif", fontWeight:900, fontStyle:o.italic?'italic':'normal', fontSize:(o.size??680)+'px', lineHeight:1, color:'transparent', WebkitTextStroke:`${o.stroke??2}px ${o.color??'rgba(181,142,255,0.13)'}`, transform:tr, transformOrigin:'center center', pointerEvents:'none', opacity:o.op??1, whiteSpace:'nowrap' }, pos), ch);
+  }
+  enSub(text,t,start,style){ return this.chars(text,t,start,{ stagger:0.018, dur:0.4, rise:14, blur:3, style:Object.assign({ fontFamily:"'IBM Plex Mono',monospace", fontSize:'19px', letterSpacing:'0.36em', color:'rgba(181,142,255,0.9)' }, style||{}) }); }
+  // gentle "hold" drift on still text: slow scale-up + eased follow-through (余韻) in a direction
+  hold(t,start,o={}){ const p=this.eOut(this.seg(t,start,start+(o.span??6))); return { s:1+p*(o.s??0.04), x:p*(o.x??0), y:p*(o.y??-10) }; }
+
+  // ════════ INTRO (0–5.4) ════════
+  sIntro(t){
+    const h=this.h;
+    const op=this.seg(t,0.2,0.8)*(1-this.seg(t,4.7,5.3));
+    const hd=this.hold(t,0.6,{s:0.045,y:-12,span:5});
+    return h('div',{ position:'absolute', inset:0, opacity:op, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', transform:`translateY(${hd.y.toFixed(1)}px) scale(${hd.s.toFixed(3)})` },[
+      h('div',{ marginBottom:'26px' }, this.enSub('TRACK 01 — LYRIC MOTION SHOWCASE', t, 2.0, { color:'#FFD27A', letterSpacing:'0.4em' })),
+      h('div',{}, this.chroma('DEEP PRISM', t, 0.6, { font:"'Barlow Condensed',sans-serif", italic:true, size:158, ls:'0.01em', base:4, beatAmt:10, rev:0.7, from:0.82 })),
+      h('div',{ marginTop:'30px' }, this.chars('幽ヶ崎 海月', t, 1.7, { stagger:0.08, dur:0.55, rise:24, style:{ fontFamily:"'Noto Serif JP',serif", fontWeight:800, fontSize:'40px', letterSpacing:'0.3em', color:'#F8EFFF' } })),
+      h('div',{ marginTop:'22px' }, this.enSub('128 BPM   ·   C MINOR   ·   AFTER EFFECTS', t, 2.6, { color:'rgba(90,233,255,0.85)' }))
+    ]);
+  }
+
+  // ════════ VERSE A (4.8–11.6) ════════
+  sVerseA(t){
+    const h=this.h;
+    const op=this.seg(t,5.0,5.5)*(1-this.seg(t,11.0,11.5));
+    const drift=(t-5)* -5;
+    const l1=h('div',{ fontFamily:"'Noto Sans JP',sans-serif", fontWeight:900, fontSize:'122px', letterSpacing:'0.01em', color:'#F8EFFF' },
+      this.chars('沈んでいく、光の粒。', t, 5.3, { stagger:0.07, dur:0.62, rise:46, blur:10, exitAt:10.6, exitStg:0.02, sizeFn:this.jpScale }));
+    const l2=h('div',{ fontFamily:"'Noto Sans JP',sans-serif", fontWeight:900, fontSize:'122px', letterSpacing:'0.01em', marginTop:'10px' },
+      this.chars('君の声が、水になる。', t, 7.7, { stagger:0.07, dur:0.62, rise:46, blur:10, exitAt:10.7, exitStg:0.02, sizeFn:this.jpScale, colorFn:(i,ch)=> (ch==='水')?'#5AE9FF':'#F8EFFF' }));
+    return h('div',{ position:'absolute', inset:0, opacity:op, overflow:'hidden' },[
+      this.ghost('沈', t, { right:'-160px', top:'-180px', size:820, rot:-9, color:'rgba(90,233,255,0.10)', serif:true, op:this.seg(t,5.2,6.6) }),
+      h('div',{ position:'absolute', inset:0, display:'flex', flexDirection:'column', justifyContent:'center', paddingLeft:'170px', transform:`translateY(${drift.toFixed(1)}px) rotate(-5deg)`, transformOrigin:'left center' },[
+        h('div',{}, l1),
+        h('div',{ marginTop:'8px', marginLeft:'18px' }, this.enSub('SINKING  —  GRAINS OF LIGHT', t, 6.1)),
+        h('div',{ marginTop:'30px', marginLeft:'120px' }, l2),
+        h('div',{ marginTop:'8px', marginLeft:'134px' }, this.enSub('YOUR VOICE  BECOMES  WATER', t, 8.4))
+      ])
+    ]);
+  }
+
+  // ════════ VERSE B (11.0–18.7) ════════
+  sVerseB(t){
+    const h=this.h;
+    const op=this.seg(t,11.5,12.0)*(1-this.seg(t,18.1,18.6));
+    // vertical 縦書き column on the right
+    const vchars=Array.from('まだ醒めない、夢の底').map((ch,i)=>{
+      const s=12.0+i*0.1, p=this.eOut(this.seg(t,s,s+0.5));
+      return h('div',{ opacity:p, transform:`translateY(${this.mix(p,-30,0).toFixed(1)}px)`, fontFamily:"'Noto Serif JP',serif", fontWeight:800, fontSize:(70*this.jpScale(ch)).toFixed(0)+'px', lineHeight:1.0, letterSpacing:'0.05em', color:'#F8EFFF' }, ch);
+    });
+    const vline=h('div',{ position:'absolute', right:'250px', top:'180px', display:'flex', flexDirection:'column', alignItems:'center' },[
+      h('div',{ width:'1px', height:'46px', background:'linear-gradient(180deg,#FFD27A,transparent)', marginBottom:'18px', opacity:this.seg(t,11.8,12.3) }),
+      h('div',{}, vchars)
+    ]);
+    const enStack=h('div',{ position:'absolute', right:'400px', top:'250px', textAlign:'right' },[
+      this.enSub('A DREAM', t, 13.2, { fontSize:'22px', color:'rgba(255,210,122,0.85)' }),
+      h('div',{ marginTop:'10px' }, this.enSub('NOT YET WAKING', t, 13.6, { fontSize:'22px', color:'rgba(181,142,255,0.85)' }))
+    ]);
+    const jhd=this.hold(t,15.0,{s:0.04,x:14,y:-8,span:3});
+    const jelly=h('div',{ position:'absolute', left:'250px', bottom:'300px', transform:`translate(${jhd.x.toFixed(1)}px,${jhd.y.toFixed(1)}px) scale(${jhd.s.toFixed(3)})`, transformOrigin:'left bottom' },[
+      h('div',{ fontFamily:"'Noto Sans JP',sans-serif", fontWeight:900, fontSize:'98px', letterSpacing:'0.02em', color:'#F8EFFF' },
+        this.chars('ひとひらの海月のように', t, 15.0, { stagger:0.06, dur:0.6, rise:30, blur:6, float:8, sizeFn:this.jpScale, colorFn:(i,ch)=> (ch==='海'||ch==='月')?'#B58EFF':'#F8EFFF' })),
+      h('div',{ marginTop:'14px' }, this.enSub('LIKE A SINGLE JELLYFISH', t, 16.0, { color:'rgba(90,233,255,0.8)' }))
+    ]);
+    return h('div',{ position:'absolute', inset:0, opacity:op }, [ vline, enStack, jelly ]);
+  }
+
+  // ════════ PRE-CHORUS (18.0–25.4) ════════
+  sPre(t){
+    const h=this.h, px=this.px, py=this.py;
+    const op=this.seg(t,18.5,19.0)*(1-this.seg(t,25.0,25.4));
+    const riser=this.seg(t,22.5,25.0);
+    // brighter readable gradient with a transparent-glass feel for the 闇 line
+    const G2='linear-gradient(115deg,#FFFFFF,#FBE9FF 26%,#FF8AD0 60%,#B58EFF 100%)';
+    // slow build-up scale + eased follow-through (余韻)
+    const b1=this.eOut(this.seg(t,19.2,24.8)), b2=this.eOut(this.seg(t,21.4,25.0));
+    const s1=1+b1*0.05, s2=1+b2*0.035;
+    // 1-point perspective: 七 / 闇 sit forward (left, larger), the 語尾 recedes back-right
+    const yaw=`rotateY(${(18-px*5).toFixed(1)}deg)`;
+    const l1=h('div',{ fontFamily:"'Noto Sans JP',sans-serif", fontWeight:900, fontSize:'168px', letterSpacing:'0em', whiteSpace:'nowrap', transform:`${yaw} scale(${s1.toFixed(3)})`, transformOrigin:'left center' },
+      this.chars('七色に、ほどけて', t, 19.2, { stagger:0.06, dur:0.5, rise:40, blur:6, pop:true, sizeFn:this.jpScale, colorFn:(i)=>this.ACC[i%7] }));
+    const l2sh=this.shake(t, this.mix(this.seg(t,23.0,25.0),1,5));
+    const l2=h('div',{ fontFamily:"'Noto Sans JP',sans-serif", fontWeight:900, fontSize:'168px', letterSpacing:'0em', whiteSpace:'nowrap', transform:`${yaw} scale(${s2.toFixed(3)})`, transformOrigin:'left center', filter:'drop-shadow(0 0 20px rgba(181,142,255,0.55))' },
+      this.chars('闇さえ、抱きしめて', t, 21.4, { stagger:0.055, dur:0.5, rise:44, blur:8, pop:true, sizeFn:this.jpScale, style:{ background:G2, WebkitBackgroundClip:'text', backgroundClip:'text', WebkitTextFillColor:'transparent', color:'transparent' } }));
+    return h('div',{ position:'absolute', inset:0, opacity:op, overflow:'hidden' },[
+      this.ghost('色', t, { left:'-90px', bottom:'-220px', size:880, rot:7, color:'rgba(255,79,168,0.10)', op:0.9 }),
+      h('div',{ position:'absolute', left:'96px', top:'150px' }, this.enSub('PRE — UNRAVELLING INTO SEVEN COLOURS', t, 18.7, { color:'#FFD27A' })),
+      h('div',{ position:'absolute', left:'120px', top:'288px', perspective:'1600px', perspectiveOrigin:'left center', transform:`translate(${(px*22-b1*20).toFixed(1)}px,${(py*16-b1*12).toFixed(1)}px) rotate(-7deg)` }, l1),
+      h('div',{ position:'absolute', right:'150px', top:'560px', perspective:'1600px', perspectiveOrigin:'left center', transform:`translate(${(px*18-b2*6+l2sh.x).toFixed(1)}px,${(py*16+b2*10+l2sh.y).toFixed(1)}px) rotate(5deg)` }, l2),
+      h('div',{ position:'absolute', left:'50%', bottom:'150px', width:'2px', height:`${(riser*400).toFixed(0)}px`, transform:'translateX(-50%)', background:'linear-gradient(180deg,transparent,#FF4FA8)', boxShadow:'0 0 14px rgba(255,79,168,0.7)', opacity:riser })
+    ]);
+  }
+
+  // ════════ CHORUS — full power (24.6–38.8) ════════
+  sChorus(t){
+    const h=this.h, GRAD=this.GRAD;
+    const op=this.seg(t,25.0,25.4)*(1-this.seg(t,38.0,38.6));
+    const els=[];
+    // beat-driven background colour flash (alternating bars)
+    const bar=Math.floor(t/(this.spb*4));
+    const flashCol=bar%2 ? 'rgba(255,79,168,0.15)' : 'rgba(90,233,255,0.13)';
+    els.push(h('div',{ position:'absolute', inset:0, background:flashCol, opacity:this.downEnv(t), mixBlendMode:'screen', pointerEvents:'none' }));
+    // scanning light band
+    const scan=this.eInOut(this.seg(t, 25.6, 30.0));
+    els.push(h('div',{ position:'absolute', top:'-10%', bottom:'-10%', left:`${this.mix(scan,-12,108).toFixed(1)}%`, width:'340px', transform:'skewX(-14deg)', background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.10),transparent)', mixBlendMode:'screen', pointerEvents:'none', opacity:this.seg(t,25.4,26)*(1-this.seg(t,29.5,30.2)) }));
+
+    // PHASE 1 — centrepiece hero
+    const p1=this.seg(t,25.0,25.4)*(1-this.seg(t,30.0,30.6));
+    const heroIn=this.eBack(this.seg(t,25.0,25.5));
+    els.push(h('div',{ position:'absolute', inset:0, opacity:p1, overflow:'hidden' },[
+      this.ghost('光', t, { center:true, left:'50%', top:'50%', size:1320, rot:-6, color:'rgba(184,80,255,0.12)', serif:true, op:0.85 }),
+      h('div',{ position:'absolute', left:'130px', top:'120px', fontFamily:"'Noto Sans JP',sans-serif", fontWeight:900, fontSize:'112px', letterSpacing:'0.16em', opacity:heroIn, transform:`rotate(-9deg) scale(${this.mix(heroIn,0.6,1).toFixed(3)})`, ...this.grad({ filter:'drop-shadow(0 0 26px rgba(255,79,168,0.45))' }) },'光れ、'),
+      h('div',{ position:'absolute', left:'50%', top:'55%', transform:`translate(-50%,-50%) rotate(-3deg) scale(${(1+this.seg(t,25.7,30)*0.06).toFixed(3)})`, display:'flex', flexDirection:'column', alignItems:'center', lineHeight:0.88 },[
+        h('div',{}, this.chroma('ディープ', t, 25.7, { font:"'Noto Sans JP',sans-serif", weight:900, size:308, ls:'0.01em', base:7, beatAmt:24, shake:10, pulse:0.06, rev:0.42, from:0.64 })),
+        h('div',{ marginTop:'-18px' }, this.chroma('プリズム', t, 26.0, { font:"'Noto Sans JP',sans-serif", weight:900, size:308, ls:'0.01em', base:7, beatAmt:24, shake:10, pulse:0.06, rev:0.42, from:0.64 }))
+      ])
+    ]));
+
+    // PHASE 2 — two slam lines, word by word on the beat
+    const p2=this.seg(t,30.4,30.8)*(1-this.seg(t,33.6,34.1));
+    const slam=(text,start)=>{ const sh=this.shake(t,6); const pp=this.eBack(this.seg(t,start,start+0.32)); return h('div',{ display:'inline-block', opacity:this.seg(t,start,start+0.18), transform:`translate(${sh.x.toFixed(1)}px,${sh.y.toFixed(1)}px) scale(${this.mix(pp,1.5,1).toFixed(3)})`, fontFamily:"'Noto Sans JP',sans-serif", fontWeight:900, fontSize:'120px', letterSpacing:'0.02em', color:'#F8EFFF', filter:`drop-shadow(0 0 ${(20+this.beatEnv(t)*26).toFixed(0)}px rgba(90,233,255,0.4))` }, this.chars(text, t, start, { stagger:0.04, dur:0.26, rise:18, blur:4, sizeFn:this.jpScale })); };
+    els.push(h('div',{ position:'absolute', inset:0, opacity:p2, display:'flex', alignItems:'center', justifyContent:'center', gap:'20px' },[
+      slam('この暗闇を', 30.6),
+      h('div',{}, this.chroma('越えて', t, 31.6, { font:"'Noto Sans JP',sans-serif", weight:900, size:150, base:5, beatAmt:18, shake:7, pulse:0.05, rev:0.3 }))
+    ]));
+
+    // PHASE 3 — finale, scatter-converge
+    const p3=this.seg(t,33.8,34.3);
+    const burst=this.beatEnv(t);
+    els.push(h('div',{ position:'absolute', inset:0, opacity:p3, overflow:'hidden' },[
+      this.ghost('歌', t, { center:true, left:'50%', top:'54%', size:1120, rot:5, color:'rgba(255,79,168,0.11)', serif:true, op:0.82 }),
+      h('div',{ position:'absolute', left:'280px', top:'250px', fontFamily:"'Noto Sans JP',sans-serif", fontWeight:900, fontSize:'98px', letterSpacing:'0.12em', color:'#F8EFFF', transform:'rotate(-7deg)' },
+        this.chars('歌が、', t, 34.0, { stagger:0.06, dur:0.5, rise:0, fromScatter:true, sizeFn:this.jpScale })),
+      h('div',{ position:'absolute', left:'50%', top:'57%', transform:`translate(-50%,-50%) rotate(-4deg) scale(${(1+burst*0.03).toFixed(3)})`, fontFamily:"'Noto Sans JP',sans-serif", fontWeight:900, fontSize:'292px', letterSpacing:'0em', whiteSpace:'nowrap', filter:`drop-shadow(0 0 ${(28+burst*44).toFixed(0)}px rgba(255,79,168,${(0.42+burst*0.32).toFixed(2)}))` },
+        this.chars('とどくまで', t, 34.6, { stagger:0.07, dur:0.6, rise:0, fromScatter:true, sizeFn:this.jpScale, style:this.grad({}) }))
+    ]));
+    return h('div',{ position:'absolute', inset:0, opacity:op, overflow:'hidden' }, els);
+  }
+
+  // ════════ OUTRO — course lockup (38.2–46) ════════
+  sOutro(t){
+    const h=this.h, GRAD=this.GRAD;
+    const op=this.seg(t,38.6,39.2);
+    const b=this.seg(t,40.0,40.7), c=this.seg(t,40.5,41.2), d=this.seg(t,41.0,41.7), e=this.eBack(this.seg(t,41.6,42.4)), eOp=this.seg(t,41.6,42.1);
+    const pulse=0.5+0.5*Math.sin(t*3.2);
+    const chip=(txt,on)=>h('div', on
+      ? { fontFamily:"'IBM Plex Mono',monospace", fontSize:'15px', letterSpacing:'0.2em', padding:'9px 17px', borderRadius:'3px', color:'#fff', background:GRAD, boxShadow:'0 0 16px rgba(255,79,168,0.4)' }
+      : { fontFamily:"'IBM Plex Mono',monospace", fontSize:'15px', letterSpacing:'0.2em', padding:'9px 17px', borderRadius:'3px', color:'#FFD27A', border:'1px solid rgba(255,210,122,0.35)' }, txt);
+    return h('div',{ position:'absolute', inset:0, opacity:op, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' },[
+      h('div',{ marginBottom:'22px' }, this.enSub('幽ヶ崎 海月 · DEEP PRISM', t, 38.8, { color:'rgba(181,142,255,0.9)', letterSpacing:'0.32em' })),
+      h('div',{}, this.chroma('DEEP PRISM', t, 38.9, { font:"'Barlow Condensed',sans-serif", italic:true, size:104, ls:'0.01em', base:2, beatAmt:4, rev:0.6, from:0.9 })),
+      h('div',{ width:'420px', height:'1px', margin:'34px 0 30px', background:'linear-gradient(90deg,transparent,rgba(255,210,122,0.4),transparent)', opacity:b }),
+      h('div',{ opacity:b, transform:`translateY(${this.mix(b,16,0).toFixed(1)}px)`, textAlign:'center' },[
+        h('div',{ fontFamily:"'Noto Sans JP',sans-serif", fontWeight:800, fontSize:'34px', letterSpacing:'0.12em', color:'rgba(248,239,255,0.9)', marginBottom:'4px' },'AI素材で作る'),
+        h('div',{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontStyle:'italic', fontSize:'92px', lineHeight:0.95, letterSpacing:'0.01em', textTransform:'uppercase', ...this.grad({ filter:'drop-shadow(0 0 24px rgba(255,79,168,0.3))' }) },'VTUBER MV')
+      ]),
+      h('div',{ opacity:c, marginTop:'16px', fontFamily:"'Noto Serif JP',serif", fontWeight:600, fontSize:'26px', letterSpacing:'0.14em', color:'rgba(248,239,255,0.86)' },'After Effects リリックMV制作講座 — 全6回'),
+      h('div',{ opacity:d, marginTop:'30px', display:'flex', gap:'14px' }, [ chip('全6回', true), chip('GPT · SUNO', false), chip('AFTER EFFECTS', false) ]),
+      h('div',{ opacity:eOp, marginTop:'40px', transform:`scale(${this.mix(e,0.9,1).toFixed(3)})`, pointerEvents:eOp>0.9?'auto':'none' },
+        h('a',{ fontFamily:"'IBM Plex Mono',monospace", fontWeight:600, fontSize:'19px', letterSpacing:'0.2em', color:'#150927', padding:'18px 40px', borderRadius:'9px', background:GRAD, boxShadow:`0 0 ${this.mix(pulse,18,40).toFixed(0)}px rgba(255,79,168,${this.mix(pulse,0.4,0.75).toFixed(2)})`, display:'inline-block', textDecoration:'none', cursor:'pointer' },'スタートページへ GO! ▸', { href:'https://maso1737.github.io/AE_MV_text/', target:'_blank', rel:'noopener noreferrer' }))
+    ]);
+  }
+
+  // ════════ chrome (HUD) ════════
+  corner(pos){
+    const h=this.h;
+    const base={ position:'absolute', width:'30px', height:'30px', opacity:0.7 };
+    const m={ tl:{ left:'34px', top:'34px', borderLeft:'2px solid #FFD27A', borderTop:'2px solid #FF4FA8' },
+              tr:{ right:'34px', top:'34px', borderRight:'2px solid #FFD27A', borderTop:'2px solid #FF4FA8' },
+              bl:{ left:'34px', bottom:'34px', borderLeft:'2px solid #FFD27A', borderBottom:'2px solid #FF4FA8' },
+              br:{ right:'34px', bottom:'34px', borderRight:'2px solid #FFD27A', borderBottom:'2px solid #FF4FA8' } };
+    return h('div', Object.assign({}, base, m[pos]));
+  }
+  waveform(t){
+    const h=this.h;
+    const bars=Array.from({length:34}).map((_,i)=>{
+      const hgt=4+(0.35+0.65*Math.abs(Math.sin(i*0.55+t*7)))*15*(1+this.beatEnv(t)*0.7);
+      const col=i%3===0?'#5AE9FF':(i%3===1?'#FF4FA8':'#FFD27A');
+      return h('div',{ width:'3px', height:hgt.toFixed(1)+'px', background:col, opacity:0.85, borderRadius:'1px' });
+    });
+    const g=1+this.seg(t,16,33)*0.3;
+    return h('div',{ display:'flex', alignItems:'flex-end', gap:'2px', height:'26px', transform:`scale(${g.toFixed(3)})`, transformOrigin:'left bottom' }, bars);
+  }
+  chrome(t){
+    const h=this.h, GRAD=this.GRAD;
+    const ml={ fontFamily:"'IBM Plex Mono',monospace", fontSize:'13px', letterSpacing:'0.26em' };
+    const beat=this.beatEnv(t);
+    return h('div',{ position:'absolute', inset:0, pointerEvents:'none', zIndex:20 },[
+      this.corner('tl'), this.corner('tr'), this.corner('bl'), this.corner('br'),
+      h('div',{ position:'absolute', left:0, top:0, height:'3px', width:`${((t/this.DUR)*100).toFixed(2)}%`, background:GRAD, boxShadow:'0 0 10px rgba(255,79,168,0.6)' }),
+      h('div',{ position:'absolute', left:'90px', top:'52px', display:'flex', alignItems:'center', gap:'10px' },[
+        h('span', this.grad({ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontStyle:'italic', fontSize:'17px', letterSpacing:'0.04em' }),'DEEP PRISM'),
+        h('span', Object.assign({}, ml, { color:'rgba(181,142,255,0.85)', fontSize:'10px' }),'// LYRIC MV')
+      ]),
+      h('div',{ position:'absolute', right:'90px', top:'52px', display:'flex', alignItems:'center', gap:'10px' },[
+        h('span', Object.assign({ color:'#FF4FA8', fontSize:'12px', transform:`scale(${(1+beat*0.6).toFixed(2)})`, opacity:0.6+beat*0.4 }),'●'),
+        h('span', Object.assign({}, ml, { color:'#FFD27A', fontSize:'10px' }),'TC '+this.tc(t)+'  ·  128 BPM')
+      ]),
+      h('div',{ position:'absolute', left:'90px', bottom:'48px' }, this.waveform(t)),
+      h('div', Object.assign({ position:'absolute', right:'90px', bottom:'54px', color:'#5AE9FF', fontSize:'10px' }, ml),'KINETIC TYPOGRAPHY · 動画師 SHOWCASE')
+    ]);
+  }
+
+  renderStage(t){
+    const k=[];
+    k.push(this.mediaLayers(t));
+    if(t<5.4) k.push(this.sIntro(t));
+    if(t>4.8 && t<11.6) k.push(this.sVerseA(t));
+    if(t>11.0 && t<18.7) k.push(this.sVerseB(t));
+    if(t>18.0 && t<25.4) k.push(this.sPre(t));
+    if(t>24.6 && t<38.8) k.push(this.sChorus(t));
+    if(t>38.2) k.push(this.sOutro(t));
+    k.push(this.chrome(t));
+    return this.h('div',{ position:'absolute', inset:0 }, k);
+  }
+
+  renderVals(){
+    return {
+      scene: this.renderStage(this.state.t),
+      stageRef: this.scaleRef,
+      t: this.state.t,
+      onSeek: this.seek,
+      onToggle: this.toggle,
+      onMove: this.move,
+      playLabel: this.state.playing ? '❚❚' : '▶',
+      timeLabel: this.state.t.toFixed(1) + ' / 46.0'
+    };
+  }
+}
+</script>
+</body>
+</html>
